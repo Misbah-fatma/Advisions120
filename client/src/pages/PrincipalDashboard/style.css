@@ -1,0 +1,132 @@
+@import url(https://code.ionicframework.com/ionicons/2.0.1/css/ionicons.min.css);
+@import url(https://fonts.googleapis.com/css?family=Raleway:400,500,800);
+@import url(https://fonts.googleapis.com/css?family=Montserrat:800);
+.snip1207 {
+  font-family: 'Raleway', Arial, sans-serif;
+  color: #000000;
+  text-align: center;
+  font-size: 16px;
+  width: 100%;
+  max-width: 1200px;
+  margin: 40px 10px;
+}
+.snip1207 .plan {
+  margin: 0;
+  width: 25%;
+  position: relative;
+  float: left;
+  overflow: hidden;
+  background-color: #ffffff;
+  border: 1px solid rgba(0, 0, 0, 0.1);
+}
+.snip1207 .plan:first-of-type {
+  border-radius: 8px 0 0 8px;
+}
+.snip1207 .plan:last-of-type {
+  border-radius: 0 8px 8px 0;
+}
+.snip1207 * {
+  -webkit-box-sizing: border-box;
+  box-sizing: border-box;
+}
+.snip1207 .plan-title {
+  font-weight: 800;
+  padding: 15px;
+  margin: 0;
+  background: rgba(0, 0, 0, 0.08);
+  color: #595959;
+  text-transform: uppercase;
+}
+.snip1207 .plan-cost {
+  padding: 20px 10px;
+}
+.snip1207 .plan-price {
+  font-family: 'Montserrat', Arial, sans-serif;
+  font-weight: 800;
+  font-size: 3em;
+  color: #2980b9;
+}
+.snip1207 .plan-type {
+  opacity: 0.6;
+}
+.snip1207 .plan-features {
+  padding: 0;
+  margin: 0;
+  text-align: left;
+  list-style: outside none none;
+  font-size: 0.8em;
+}
+.snip1207 .plan-features li {
+  border-top: 1px solid #d2d7e2;
+  padding: 10px 5%;
+}
+.snip1207 .plan-features li:nth-child(even) {
+  background: rgba(0, 0, 0, 0.08);
+}
+.snip1207 .plan-features i {
+  margin-right: 8px;
+  opacity: 0.4;
+}
+.snip1207 .plan-select {
+  border-top: 1px solid #d2d7e2;
+  padding: 30px 10px;
+}
+.snip1207 .plan-select a {
+  background-color: #2980b9;
+  color: #ffffff;
+  text-decoration: none;
+  padding: 0.5em 1em;
+  border-radius: 8px;
+  -webkit-transition: all 0.25s ease-out;
+  transition: all 0.25s ease-out;
+}
+.snip1207 .plan-select a:hover {
+  background-color: #409ad5;
+}
+.snip1207 .featured {
+  margin-top: -20px;
+  background-color: #2980b9;
+  color: #ffffff;
+  box-shadow: 0 0 20px rgba(0, 0, 0, 0.4);
+  z-index: 1;
+  border-radius: 8px;
+}
+.snip1207 .featured .plan-title,
+.snip1207 .featured .plan-price {
+  color: #ffffff;
+}
+.snip1207 .featured .plan-title {
+  padding: 25px 15px;
+}
+.snip1207 .featured .plan-select {
+  padding: 40px 10px;
+}
+.snip1207 .featured .plan-select a {
+  color: #2980b9;
+  background-color: #ffffff;
+}
+.snip1207 .featured .plan-select a:hover {
+  background-color: #409ad5;
+  color: #ffffff;
+}
+@media only screen and (max-width: 767px) {
+  .snip1207 .plan {
+    width: 50%;
+    border-radius: 0 !important;
+  }
+  .snip1207 .featured {
+    margin-top: 0;
+    border-radius: 0;
+  }
+  .snip1207 .featured .plan-title {
+    padding: 15px;
+  }
+  .snip1207 .featured .plan-select {
+    padding: 30px 10px;
+  }
+}
+@media only screen and (max-width: 440px) {
+  .snip1207 .plan {
+    width: 100%;
+  }
+}
