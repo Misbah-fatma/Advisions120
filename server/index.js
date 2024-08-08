@@ -49,7 +49,6 @@ app.get("/api/api/getkey", (req, res) =>
 );
 
 
-// Generate JWT token
 const generateToken = (room, role) => {
   return jwt.sign(
     {
@@ -64,7 +63,7 @@ const generateToken = (room, role) => {
       sub: 'meet.jit.si', // Subject
       room: room, // Room name
     },
-    SECRET_KEY,
+    process.env.JWT_SECRET, // Ensure SECRET_KEY is stored in environment variables
     { expiresIn: '1h' }
   );
 };
@@ -130,6 +129,37 @@ if (process.env.NODE_ENV === 'production') {
     res.sendFile(path.resolve(__dirname, 'client', 'build', 'index.html'));
   });
 }
+
+const { OAuth2Client } = require('google-auth-library');
+const { requireLogin } = require("./middlewares/requireLogin");
+const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
+
+app.post('/api/auth/google-login', async (req, res) => {
+  const { token } = req.body;
+
+  try {
+    const ticket = await client.verifyIdToken({
+      idToken: token,
+      audience: process.env.GOOGLE_CLIENT_ID,
+    });
+
+    const { userName, email } = ticket.getPayload();
+
+    // Find or create user in your database
+    let user = await User.findOne({ email });
+    if (!user) {
+      user = await User.create({ userName, email });
+    }
+
+    const authToken = jwt.sign({ userId: user._id }, SECRET_KEY, { expiresIn: '1h' });
+
+    res.status(200).json({ userInfo: user, token: authToken });
+  } catch (error) {
+    res.status(400).json({ error: "Invalid token" });
+  }
+});
+
+
 
 // Database and server setup
 const PORT = process.env.PORT || 5010;

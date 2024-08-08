@@ -31,7 +31,7 @@ body {
     color: #495057;
     text-align: left;
     background-color: #fff;
-    overflow-x: hidden;
+
 }
 
 .app-container {
@@ -442,9 +442,9 @@ body {
 
 .app-sidebar.sidebar-shadow {
     box-shadow: 7px 0 60px rgba(0, 0, 0, 0.05);
-    /* overflow-x: hidden; */
+    overflow-x: auto;
     overflow-y: auto;
-    /* overflow: scroll; */
+    overflow: scroll;
 }
 
 .app-sidebar-heading {
@@ -505,7 +505,7 @@ body {
 .vertical-nav-menu .mm-collapsing {
     position: relative;
     height: 0;
-    overflow: hidden;
+    overflow: auto;
     transition-timing-function: ease;
     transition-duration: 0.25s;
     transition-property: height, visibility;
@@ -784,10 +784,7 @@ body {
     height: 100vh;
 }
 
-.fixed-sidebar .app-main .app-main-outer {
-    z-index: 9;
-    padding-left: 280px;
-}
+
 
 .fixed-sidebar.fixed-header .app-sidebar .app-header-logo {
     display: none;
@@ -3082,28 +3079,28 @@ button.bg-alternate:focus {
 }
 
 .scroll-area {
-    overflow-x: hidden;
+    overflow-x: auto;
     height: 400px;
 }
 
 .scroll-area-xs {
     height: 150px;
-    overflow-x: hidden;
+    overflow-x: auto;
 }
 
 .scroll-area-sm {
     height: 200px;
-    overflow-x: hidden;
+    overflow-x: auto;
 }
 
 .scroll-area-md {
     height: 300px;
-    overflow-x: hidden;
+    overflow-x: auto;
 }
 
 .scroll-area-lg {
     height: 400px;
-    overflow-x: hidden;
+    overflow-x: auto;
 }
 
 .scroll-area-x {

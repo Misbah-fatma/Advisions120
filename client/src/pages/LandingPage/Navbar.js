@@ -149,7 +149,7 @@ export default function Navbar() {
       {userData ? (
         <>
           <IconButton color="inherit" onClick={handleUserMenuOpen} sx={{ padding: 1.5, display: { xs: 'none', sm: 'block' } }}>
-            <Avatar>{userData.userName.charAt(0)}</Avatar>
+            <Avatar>{userData.userName ? userData.userName.charAt(0) : ''}</Avatar>
           </IconButton>
           <Menu
             anchorEl={userMenuAnchorEl}
@@ -190,7 +190,7 @@ export default function Navbar() {
           {menuItems}
           {isMobile && userData && (
             <IconButton color="inherit" onClick={handleUserMenuOpen} sx={{ padding: 1.5 }}>
-              <Avatar>{userData.userName.charAt(0)}</Avatar>
+              <Avatar>{userData.userName ? userData.userName.charAt(0) : ''}</Avatar>
             </IconButton>
           )}
         </Toolbar>

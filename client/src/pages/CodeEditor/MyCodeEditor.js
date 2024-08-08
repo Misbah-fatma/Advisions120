@@ -18,7 +18,7 @@ function MyCodeEditorPage() {
       <Navbar />
      
       <ChakraProvider>
-      <Box minH="100vh"  px={6} py={8} >
+      <Box >
     <CodeEditor />
     </Box>
   </ChakraProvider>

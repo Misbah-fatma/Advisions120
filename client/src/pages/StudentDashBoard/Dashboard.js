@@ -292,7 +292,9 @@ const Student = ({ studentId }) => {
   useEffect(() => {
     const fetchLiveClasses = async () => {
       try {
-        const response = await axiosInstance.get(`/api/live-classes/student/${studentId}`);
+        const response = await axiosInstance.get(`/api/live-classes/student/${studentId}`,
+          
+        );
         setLiveClasses(response.data);
       } catch (error) {
         console.error(error);
@@ -301,6 +303,7 @@ const Student = ({ studentId }) => {
 
     fetchLiveClasses();
   }, [studentId]);
+  
 
   return (
     <div>
@@ -330,7 +333,7 @@ const Student = ({ studentId }) => {
                                 <th><strong>User Email</strong></th>
                                 <th><strong>Number of Room Created</strong></th>
                                 <th><strong>Role</strong></th>
-                                <th><strong>Live Class</strong></th>
+                                {/* <th><strong>Live Class</strong></th> */}
                               </tr>
                             </thead>
                             <tbody>
@@ -345,7 +348,7 @@ const Student = ({ studentId }) => {
                                   )}
                                 </td>
                                 <td className="tableId"><span></span> {activity}</td>
-                                <List>
+                                {/* <List>
       {liveClasses.map((liveClass) => (
         <ListItem key={liveClass._id}>
           <ListItemText
@@ -357,7 +360,7 @@ const Student = ({ studentId }) => {
           </Button>
         </ListItem>
       ))}
-    </List>
+    </List> */}
                               </tr>
                             </tbody>
                           </table>
@@ -369,7 +372,7 @@ const Student = ({ studentId }) => {
                 <div className="col-md-12">
                   <div className="card mb-5">
                     <div className="card-body">
-                      <div className="table-responsive-lg text-center">
+                      <div className="table-responsive text-center">
                         <table id="dataTable" className="table">
                           <thead className="text-center">
                             <tr>

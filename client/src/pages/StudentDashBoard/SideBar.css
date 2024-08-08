@@ -57,4 +57,13 @@
   display: inline-block;
 }
 
+/* @media (max-width: 600px) {
+
+  .fixed-sidebar .app-main .app-main-outer {
+
+    padding-left: 0;
+}
+
+ 
+} */
 

@@ -161,8 +161,8 @@ function StudentDetails() {
       <div className="app-container app-theme-white body-tabs-shadow fixed-sidebar fixed-header bg-white" id="appContent">
         <div className="app-main">
           <Sidebar/>
-          <div className="app-main-outer">
-            <div className="app-main-inner">
+          <div className="col mt-4">
+          <div className="row">
               <div className="page-title-actions px-3 d-flex">
                 <nav aria-label="breadcrumb">
                   <ol className="breadcrumb">
@@ -178,14 +178,14 @@ function StudentDetails() {
                     {userData ? (
                       <VStack spacing={4} align="stretch">
                         <Grid templateColumns="repeat(2, 1fr)" gap={4}>
-                          <FormControl isDisabled>
+                          <FormControl >
                             <FormLabel>User Name</FormLabel>
                             <Input
                               type="text"
                               name="userName"
                               value={userData.userName}
                               onChange={handleChange}
-                              isReadOnly // Make it read-only
+     
                             />
                           </FormControl>
                           <FormControl isDisabled>

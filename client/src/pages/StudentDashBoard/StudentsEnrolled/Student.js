@@ -21,7 +21,7 @@ import {
   Select,
   useToast
 } from '@chakra-ui/react';
-import "../../../App.css"
+import "../../../App.css";
 
 const Student = () => {
   const [data, setData] = useState([]);
@@ -160,8 +160,8 @@ const Student = () => {
       <div className="app-container app-theme-white body-tabs-shadow fixed-sidebar fixed-header" id="appContent">
         <div className="app-main">
           <Sidebar />
-          <div className="app-main-outer">
-            <div className="app-main-inner">
+          <div className="col mt-4">
+          <div className="row">
               <div className="page-title-actions px-3 d-flex">
                 <nav aria-label="breadcrumb">
                   <ol className="breadcrumb">
@@ -174,10 +174,10 @@ const Student = () => {
                 <div className="col-md-12">
                   <div className="card mb-5">
                     <div className="card-body">
-                      <div className="table-responsive-lg">
+                      <Box overflowX="auto">
                         <table id="dataTable" className="table">
                           <thead>
-                            <tr  style={{ textAlign: 'center' }}>
+                            <tr style={{ textAlign: 'center' }}>
                               <th><strong>Student</strong></th>
                               <th><strong>Email</strong></th>
                               <th style={{ width: '15%' }}><strong>Role</strong></th>
@@ -229,14 +229,14 @@ const Student = () => {
                             )}
                           </tbody>
                         </table>
-                      </div>
+                      </Box>
                     </div>
                   </div>
 
                   {/* New Table for Extra Details */}
                   <div className="card mb-5">
                     <div className="card-body">
-                      <div className="table-responsive-lg">
+                      <Box overflowX="auto">
                         <table id="extraDetailsTable" className="table">
                           <thead>
                             <tr>
@@ -246,8 +246,8 @@ const Student = () => {
                               <th style={{ width: '10%' }}><strong>Id Proof</strong></th>
                               <th><strong>Phone </strong></th>
                               <th><strong>School Name</strong></th>
-                              <th ><strong>Class</strong></th>
-                              <th  style={{ width: '9%' }}><strong>Status</strong></th>
+                              <th><strong>Class</strong></th>
+                              <th style={{ width: '9%' }}><strong>Status</strong></th>
                               <th><strong>Action</strong></th>
                             </tr>
                           </thead>
@@ -262,25 +262,24 @@ const Student = () => {
                                 <td className="tableValue">{userDetails.schoolName}</td>
                                 <td className="tableValue">{userDetails.studentClass}</td>
                                 <td className="tableStatus">
-  <div className="statusItem">
-    {userDetails.status === 'Active' && (
-      <div className={`circleDot animatedCompleted greenDot`}></div>
-    )}
-    {userDetails.status === 'Pending' && (
-      <div className="spinner-border text-info" role="status" style={{ width: '1rem', height: '1rem', textDecoration: 'none' }}></div>
-    )}
-    <div className="statusText">
-      {userDetails.status === '' ? (
-        <span className="statusChoose">Choose a school</span>
-      ) : (
-        <span className={`status${userDetails.status}`}>
-          {userDetails.status}
-        </span>
-      )}
-    </div>
-  </div>
-</td>
-
+                                  <div className="statusItem">
+                                    {userDetails.status === 'Active' && (
+                                      <div className={`circleDot animatedCompleted greenDot`}></div>
+                                    )}
+                                    {userDetails.status === 'Pending' && (
+                                      <div className="spinner-border text-info" role="status" style={{ width: '1rem', height: '1rem', textDecoration: 'none' }}></div>
+                                    )}
+                                    <div className="statusText">
+                                      {userDetails.status === '' ? (
+                                        <span className="statusChoose">Choose a school</span>
+                                      ) : (
+                                        <span className={`status${userDetails.status}`}>
+                                          {userDetails.status}
+                                        </span>
+                                      )}
+                                    </div>
+                                  </div>
+                                </td>
                                 <td>
                                   <Button onClick={handleEditClick} colorScheme="blue" size="sm">Edit</Button>
                                 </td>
@@ -288,7 +287,7 @@ const Student = () => {
                             )}
                           </tbody>
                         </table>
-                      </div>
+                      </Box>
                     </div>
                   </div>
                   {/* End of New Table for Extra Details */}

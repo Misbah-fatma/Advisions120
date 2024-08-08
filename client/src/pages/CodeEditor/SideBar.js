@@ -50,7 +50,7 @@ const Sidebar = ({ onFileClick, onCodeSelect }) => {
           height="100%"
           p={2}
           color={isError ? "red.400" : ""}
-
+          
           borderColor={isError ? "red.500" : "#333"}
           overflowY="scroll"
           sx={{

@@ -84,8 +84,8 @@ const PlanPage = () => {
       <div className="app-container app-theme-white body-tabs-shadow fixed-sidebar fixed-header" id="appContent">
         <div className="app-main">
           <SideBar />
-          <div className="app-main-outer">
-            <div className="app-main-inner">
+          <div className="col mt-4">
+          <div className="row">
               <div className="page-title-actions px-3 d-flex">
                 <nav aria-label="breadcrumb">
                   <ol className="breadcrumb">
@@ -101,9 +101,9 @@ const PlanPage = () => {
                       <div className="snip1207">
                         {plans.map(plan => (
                           <div key={plan._id} className={`plan ${plan.featured ? 'featured' : ''}`}>
-                            <h3 className="plan-title">{plan.title}</h3>
+                            <h3 className="plan-title" style={{fontSize : "22px"}}>{plan.title}</h3>
                             <div className="plan-cost">
-                              <span className="plan-price">{plan.price}</span>
+                              <span className="plan-price" style={{fontSize : "43px"}}>{plan.price}</span>
                               <span className="plan-type">/ Monthly</span>
                             </div>
                             <ul className="plan-features">

@@ -2,53 +2,49 @@ import {
   Box,
   IconButton,
   Tooltip,
-  HStack,
+  VStack,
 } from "@chakra-ui/react";
 import { FaJava, FaPython, FaJs, FaPhp } from "react-icons/fa";
 import { SiTypescript, SiCsharp } from "react-icons/si";
 import { Helmet } from "react-helmet";
 import { LANGUAGE_VERSIONS } from "../constants";
 
-const ICONS = {
-  javascript: FaJs,
-  typescript: SiTypescript,
-  python: FaPython,
-  java: FaJava,
-  csharp: SiCsharp,
-  php: FaPhp,
-};
-
 const LanguageSelector = ({ language, onSelect }) => {
   return (
-    <>
+    <VStack spacing={4}>
       <Helmet>
-        <title>Advisions LMS</title>
-        <meta name="description" content="Learning Management System" />
-        <meta name="keywords" content="Advisions, LMS" />
+        <link
+          rel="stylesheet"
+          href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.3/css/all.min.css"
+        />
       </Helmet>
-      <Box ml={2} mb={4}>
-        <HStack spacing={2} alignItems="center">
-          {Object.entries(LANGUAGE_VERSIONS).map(([lang, version]) => {
-            const Icon = ICONS[lang];
-            return (
-              <Tooltip
-                key={lang}
-                label={`${lang} (${version})`}
-                aria-label={`${lang} (${version})`}
-              >
-                <IconButton
-                  icon={<Icon />}
-                  aria-label={lang}
-                  onClick={() => onSelect(lang)}
-                  colorScheme={lang === language ? "blue" : "gray"}
-                  size="lg"
-                />
-              </Tooltip>
-            );
-          })}
-        </HStack>
-      </Box>
-    </>
+      {Object.keys(LANGUAGE_VERSIONS).map((lang) => (
+        <Tooltip key={lang} label={LANGUAGE_VERSIONS[lang]} placement="right">
+          <IconButton
+            aria-label={LANGUAGE_VERSIONS[lang]}
+            icon={
+              lang === "java" ? (
+                <FaJava />
+              ) : lang === "python" ? (
+                <FaPython />
+              ) : lang === "javascript" ? (
+                <FaJs />
+              ) : lang === "typescript" ? (
+                <SiTypescript />
+              ) : lang === "php" ? (
+                <FaPhp />
+              ) : lang === "csharp" ? (
+                <SiCsharp />
+              ) : null
+            }
+            size="lg"
+            variant={language === lang ? "solid" : "outline"}
+            colorScheme={language === lang ? "blue" : "gray"}
+            onClick={() => onSelect(lang)}
+          />
+        </Tooltip>
+      ))}
+    </VStack>
   );
 };
 

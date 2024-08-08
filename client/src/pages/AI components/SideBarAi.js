@@ -1,12 +1,32 @@
-import React, { useState, useEffect } from 'react';
-import { NavLink, Link } from 'react-router-dom';
+import * as React from 'react';
+import PropTypes from 'prop-types';
+import AppBar from '@mui/material/AppBar';
+import Box from '@mui/material/Box';
+import CssBaseline from '@mui/material/CssBaseline';
+import Divider from '@mui/material/Divider';
+import Drawer from '@mui/material/Drawer';
+import IconButton from '@mui/material/IconButton';
+import MenuIcon from '@mui/icons-material/Menu';
+import Toolbar from '@mui/material/Toolbar';
+import Typography from '@mui/material/Typography';
 import { useNavigate } from 'react-router-dom';
 import { useDispatch } from 'react-redux';
-import logo10 from "../StudentDashBoard/logo10.png";
+import { useState, useEffect } from 'react';
+import { NavLink, Link } from 'react-router-dom';
+import Menu from '@mui/material/Menu';
+import MenuItem from '@mui/material/MenuItem';
+import useMediaQuery from '@mui/material/useMediaQuery';
+import { ThemeProvider, createTheme } from '@mui/material/styles';
+import AccountCircleIcon from '@mui/icons-material/AccountCircle';
 
-const Sidebar = () => {
-  const dispatch = useDispatch();
-  const history = useNavigate();
+const drawerWidth = 240;
+const theme = createTheme();
+
+function ResponsiveDrawer(props) {
+  const { window } = props;
+  const [mobileOpen, setMobileOpen] = useState(false);
+  const [isClosing, setIsClosing] = useState(false);
+  const [anchorEl, setAnchorEl] = useState(null);
   const [showOptions, setShowOptions] = useState({
     option1: false,
     option2: false,
@@ -19,16 +39,27 @@ const Sidebar = () => {
     option9: false,
   });
 
-  const toggleOptions = (option) => {
-    setShowOptions({
-      ...showOptions,
-      [option]: !showOptions[option],
-    });
+  const dispatch = useDispatch();
+  const history = useNavigate();
+
+  const handleDrawerClose = () => {
+    setIsClosing(true);
+    setMobileOpen(false);
+  };
+
+  const handleDrawerTransitionEnd = () => {
+    setIsClosing(false);
+  };
+
+  const handleDrawerToggle = () => {
+    if (!isClosing) {
+      setMobileOpen(!mobileOpen);
+    }
   };
 
   const handleLogout = () => {
-    localStorage.clear("user");
-    localStorage.clear("auth_token");
+    // Dispatch logout action
+    localStorage.clear();
     dispatch({ type: "CLEAR__USER" });
     history("/login");
   };
@@ -42,180 +73,266 @@ const Sidebar = () => {
     }
   }, []);
 
-  return (
-    <div className="app-container app-theme-white body-tabs-shadow fixed-sidebar fixed-header" id="appContent">
-      <div className="app-header header-shadow">
-        <div className="app-header-logo"></div>
-        <div className="app-header-mobile-menu">
-          <div>
-            <button type="button" className="hamburger hamburger--elastic mobile-toggle-nav">
-              <span className="hamburger-box">
-                <span className="hamburger-inner"></span>
-              </span>
-            </button>
-          </div>
-        </div>
-        <div className="app-header-menu">
-          <span>
-            <button type="button" className="btn-icon btn-icon-only btn btn-primary btn-sm mobile-toggle-header-nav">
-              <span className="btn-icon-wrapper">
-                <i className="fa fa-ellipsis-v fa-w-6"></i>
-              </span>
-            </button>
-          </span>
-        </div>
-        <div className="app-header-content">
-          <div className="app-header-left">
-          <div className="header-pane">
-          <div className="app-header-right d-flex align-items-center">
-            <div className="container">
-              <nav className="navbar navbar-expand-lg p-0">
-                <div className="nav-item nav-link active">
-                <Link to="/home" className='p-1 m-0 font-weight-large'>Home</Link>         
-                <Link to="/mlModel" className='p-3 m-0 font-weight-large'>ML Model</Link>    
-              <Link to="/caseStudy" className='p-2 m-0 font-weight-large'>Case Study</Link>
-         </div>
-         </nav>
-         </div>
-         </div>
-            </div>
-          </div>
-          <div className="app-header-right d-flex align-items-center">
-            <div className="container">
-              <nav className="navbar navbar-expand-lg p-0">
-                <div className="nav-item nav-link active">
-                  {userData ? (
-                    <div className="nav-item dropdown">
-                      <a href="/" className="nav-link dropdown-toggle text-#6200ea" data-toggle="dropdown" style={{ color: "#6200ea" }}>
-                        {userData.userName}
-                        <i className="fa fa-user-circle-o mt-1" aria-hidden="true"></i>
-                      </a>
-                      <div className="dropdown-menu rounded-0 border-0 m-0">
-                        <button className="dropdown-item text-danger" onClick={handleLogout}>Logout</button>
-                      </div>
-                    </div>
-                  ) : (
-                    <Link to="/login" className="nav-item nav-link active">Login</Link>
-                  )}
-                </div>
-              </nav>
-            </div>
-          </div>
-        </div>
-      </div>
+  const handleClick = (event) => {
+    setAnchorEl(event.currentTarget);
+  };
 
-      <div className="app-sidebar sidebar-shadow">
-        <div className="scrollbar-sidebar pb-3">
-          <div className="branding-logo mb-4 text-start px-5">
-            <img src={logo10} alt="Logo" style={{ height: "40px", marginRight: "5px" }} />
-          </div>
-          
-          <div className="app-sidebar-inner">
-            <div className="option" onClick={() => toggleOptions('option1')}>
-              <NavLink activeClassName="active-link vertical-nav-menu">
-                <i className="fa-solid fa-home menu-icon"></i>
-                Sentiment Analysis
-              </NavLink>
-              {showOptions.option1 &&
-          <div className="sub-options">
-            <NavLink to="/sentiment-analysis" activeClassName="active-link">
-              <i className="fa-solid fa-swatchbook"></i>
-              &nbsp;  Practical
-            </NavLink>
-            <NavLink to="/sentimentAnalysisExplanation" activeClassName="active-link">
-              <i className="fa-solid fa-book-open-reader" ></i>
-              &nbsp; Theory
-            </NavLink>
-          
-          </div>
-        }
-            </div>
-            <div className="option" onClick={() => toggleOptions('option2')}>
-              <NavLink activeClassName="active-link vertical-nav-menu">
-                <i className="fa-solid fa-gem menu-icon"></i>
-                CNN<span className= "text-white">wecwecfwerf</span>
-              </NavLink>
-              {showOptions.option2 &&
-          <div className="sub-options">
-            <NavLink to="/cnn" activeClassName="active-link">
-              <i className="fa-solid fa-swatchbook"></i>
-              &nbsp;  Practical
-            </NavLink>
-            <NavLink to="/cnnExplanation" activeClassName="active-link">
-              <i className="fa-solid fa-book-open-reader" ></i>
-              &nbsp; Theory
-            </NavLink>
-          
-          </div>
-        }
-            </div>
-            <div className="option" onClick={() => toggleOptions('option3')}>
-              <NavLink  activeClassName="active-link vertical-nav-menu">
-                <i className="fa-solid fa-tasks menu-icon"></i>
-                NLP<span className= "text-white">wecwecfwerf</span>
-              </NavLink>
-              {showOptions.option3 &&
-          <div className="sub-options">
-            <NavLink to="/nlp" activeClassName="active-link">
-              <i className="fa-solid fa-swatchbook"></i>
-              &nbsp;  Practical
-            </NavLink>
-            <NavLink to="/nlpExplanation" activeClassName="active-link">
-              <i className="fa-solid fa-book-open-reader" ></i>
-              &nbsp; Theory
-            </NavLink>
-          
-          </div>
-        }
-            </div>
-            <div className="option" onClick={() => toggleOptions('option5')}>
-              <NavLink activeClassName="active-link vertical-nav-menu">
-                <i className="fa-solid fa-money-bill-transfer menu-icon"></i>
-                TF-IDF <span className= "text-white">wecwecfwerf</span>
-              </NavLink>
-              {showOptions.option5 &&
-          <div className="sub-options">
-            <NavLink to="/tfidf" activeClassName="active-link">
-              <i className="fa-solid fa-swatchbook"></i>
-              &nbsp;  Practical
-            </NavLink>
-            <NavLink to="/tdidfAnalysisExplanation" activeClassName="active-link">
-              <i className="fa-solid fa-book-open-reader" ></i>
-              &nbsp; Theory
-            </NavLink>
-          
-          </div>
-        }
-            </div>
-            <div className="option" onClick={() => toggleOptions('option7')}>
-              <NavLink activeClassName="active-link vertical-nav-menu">
-                <i className="fa-solid fa-credit-card menu-icon"></i>
-                Species Identifier
-              </NavLink>
-              {showOptions.option7 &&
-          <div className="sub-options">
-            <NavLink to="/species-identifier" activeClassName="active-link">
-              <i className="fa-solid fa-swatchbook"></i>
-              &nbsp;  Practical
-            </NavLink>
-            <NavLink to="/speciesIdentifierExplanation" activeClassName="active-link">
-              <i className="fa-solid fa-book-open-reader" ></i>
-              &nbsp; Theory
-            </NavLink>
-          
-          </div>
-        }
-            </div>
+  const handleClose = () => {
+    setAnchorEl(null);
+  };
 
-          
+  const toggleOptions = (option) => {
+    setShowOptions({
+      ...showOptions,
+      [option]: !showOptions[option]
+    });
+  };
 
-          </div>
+  const isMobile = useMediaQuery(theme.breakpoints.down('sm'));
+
+  const drawer = (
+    <div>
+      <Box sx={{ display: 'flex', justifyContent: 'center', p: 2 }}>
+        <img src="/assets/logo10.png" alt="Logo" style={{ height: '35px' }} />
+      </Box>
+      <div className="app-sidebar-inner mt-4">
+        {isMobile && (
+          <>
+            <div className="option">
+              <NavLink to="/" activeClassName="active-link vertical-nav-menu">
+                <i className="fas fa-home menu-icon"></i>
+                Home<span className='text-white'>svcerfe</span>
+              </NavLink>
+            </div>
+            <div className="option">
+              <NavLink to="/caseStudy" activeClassName="active-link vertical-nav-menu">
+                <i className="fas fa-robot menu-icon"></i>
+                Case Study<span className='text-white'>svcerfe</span>
+              </NavLink>
+            </div>
+            <div className="option">
+              <NavLink to="/mlModel" activeClassName="active-link vertical-nav-menu">
+                <i className="fas fa-brain menu-icon"></i>
+                ML Model<span className='text-white'>svcerfe</span>
+              </NavLink>
+            </div>
+          </>
+        )}
+        <div className="option" onClick={() => toggleOptions('option1')}>
+          <NavLink to="/studentDashboard" activeClassName="active-link vertical-nav-menu">
+            <i className="fas fa-tachometer-alt menu-icon"></i>
+            Dashboard
+          </NavLink>
+        </div>
+        <div className="option" onClick={() => toggleOptions('option1')}>
+          <NavLink activeClassName="active-link vertical-nav-menu">
+            <i className="fas fa-chart-line menu-icon"></i>
+            Sentiment Analysis
+          </NavLink>
+          {showOptions.option1 && (
+            <div className="sub-options">
+              <NavLink to="/sentiment-analysis" activeClassName="active-link">
+                <i className="fas fa-flask"></i>
+                &nbsp; Practical
+              </NavLink>
+              <NavLink to="/sentimentAnalysisExplanation" activeClassName="active-link">
+                <i className="fas fa-book"></i>
+                &nbsp; Theory
+              </NavLink>
+            </div>
+          )}
+        </div>
+        <div className="option" onClick={() => toggleOptions('option2')}>
+          <NavLink activeClassName="active-link vertical-nav-menu">
+            <i className="fas fa-brain menu-icon"></i>
+            CNN
+          </NavLink>
+          {showOptions.option2 && (
+            <div className="sub-options">
+              <NavLink to="/cnn" activeClassName="active-link">
+                <i className="fas fa-flask"></i>
+                &nbsp; Practical
+              </NavLink>
+              <NavLink to="/cnnExplanation" activeClassName="active-link">
+                <i className="fas fa-book"></i>
+                &nbsp; Theory
+              </NavLink>
+            </div>
+          )}
+        </div>
+        <div className="option" onClick={() => toggleOptions('option3')}>
+          <NavLink activeClassName="active-link vertical-nav-menu">
+            <i className="fas fa-file-alt menu-icon"></i>
+            NLP<span className='text-white'>nffddfgckjenr</span>
+          </NavLink>
+          {showOptions.option3 && (
+            <div className="sub-options">
+              <NavLink to="/nlp" activeClassName="active-link">
+                <i className="fas fa-flask"></i>
+                &nbsp; Practical
+              </NavLink>
+              <NavLink to="/nlpExplanation" activeClassName="active-link">
+                <i className="fas fa-book"></i>
+                &nbsp; Theory
+              </NavLink>
+            </div>
+          )}
+        </div>
+        <div className="option" onClick={() => toggleOptions('option5')}>
+          <NavLink activeClassName="active-link vertical-nav-menu">
+            <i className="fas fa-search menu-icon"></i>
+            TF-IDF
+          </NavLink>
+          {showOptions.option5 && (
+            <div className="sub-options">
+              <NavLink to="/tfidf" activeClassName="active-link">
+                <i className="fas fa-flask"></i>
+                &nbsp; Practical
+              </NavLink>
+              <NavLink to="/tdidfAnalysisExplanation" activeClassName="active-link">
+                <i className="fas fa-book"></i>
+                &nbsp; Theory
+              </NavLink>
+            </div>
+          )}
+        </div>
+        <div className="option" onClick={() => toggleOptions('option7')}>
+          <NavLink activeClassName="active-link vertical-nav-menu">
+            <i className="fas fa-paw menu-icon"></i>
+            Species Identifier
+          </NavLink>
+          {showOptions.option7 && (
+            <div className="sub-options">
+              <NavLink to="/species-identifier" activeClassName="active-link">
+                <i className="fas fa-flask"></i>
+                &nbsp; Practical
+              </NavLink>
+              <NavLink to="/speciesIdentifierExplanation" activeClassName="active-link">
+                <i className="fas fa-book"></i>
+                &nbsp; Theory
+              </NavLink>
+            </div>
+          )}
         </div>
       </div>
     </div>
+  );
   
-    
+
+  const container = window !== undefined ? () => window().document.body : undefined;
+
+  return (
+    <ThemeProvider theme={theme}>
+      <Box sx={{ display: 'flex' }}>
+        <CssBaseline />
+        <AppBar
+          position="fixed"
+          sx={{
+            width: { sm: `calc(100% - ${drawerWidth}px)` },
+            ml: { sm: `${drawerWidth}px` },
+            backgroundColor: 'white', // Remove blue background
+          }}
+        >
+          <Toolbar sx={{ display: 'flex', justifyContent: 'space-between' }}>
+            <Box sx={{ display: 'flex', alignItems: 'center' }}>
+              <IconButton
+                color="inherit"
+                aria-label="open drawer"
+                edge="start"
+                onClick={handleDrawerToggle}
+                sx={{ mr: 2, display: { sm: 'none' } }}
+              >
+                <MenuIcon color="primary" />
+              </IconButton>
+              <Box sx={{ display: { xs: 'flex', sm: 'none' }, alignItems: 'center' }}>
+                <img src="/assets/logo10.png" alt="Logo" style={{ height: '30px' }} />
+              </Box>
+              {!isMobile && (
+                <>
+                <NavLink to="/" style={{ textDecoration: 'none', color: '#007bff', marginLeft: '10px', fontSize: '16px' }}>
+                  Home
+                </NavLink>
+                <NavLink to="/caseStudy" style={{ textDecoration: 'none', color: '#007bff', marginLeft: '15px', fontSize: '16px' }}>
+                 Case Study
+                </NavLink>
+                <NavLink to="/mlModel" style={{ textDecoration: 'none', color: '#007bff', marginLeft: '15px', fontSize: '16px' }}>
+                  ML Model
+                </NavLink>
+              </>
+              )}
+            </Box>
+
+            <Typography variant="h6" noWrap component="div" sx={{ display: 'flex', alignItems: 'center' }}>
+              {userData ? (
+                <div>
+                  <IconButton onClick={handleClick} sx={{ color: '#007bff', fontSize: '18px', display: 'flex', alignItems: 'center' }}>
+      <Typography variant="body1" sx={{ marginRight: '8px' }}>
+        {userData.userName}
+      </Typography>
+      <AccountCircleIcon sx={{ fontSize: '24px' }} />
+    </IconButton>
+                  <Menu
+                    anchorEl={anchorEl}
+                    open={Boolean(anchorEl)}
+                    onClose={handleClose}
+                    PaperProps={{
+                      sx: {
+                        minWidth: 90,
+                        color : "red"
+                      },
+                    }}
+                  >
+                    <MenuItem onClick={handleLogout}>Logout</MenuItem>
+                  </Menu>
+                </div>
+              ) : (
+                <Link to="/login" className="nav-item nav-link active">
+                  Login
+                </Link>
+              )}
+            </Typography>
+          </Toolbar>
+        </AppBar>
+        <Box
+          component="nav"
+          sx={{ width: { sm: drawerWidth }, flexShrink: { sm: 0 } }}
+          aria-label="mailbox folders"
+        >
+          <Drawer
+            container={container}
+            variant="temporary"
+            open={mobileOpen}
+            onTransitionEnd={handleDrawerTransitionEnd}
+            onClose={handleDrawerClose}
+            ModalProps={{
+              keepMounted: true, // Better open performance on mobile.
+            }}
+            sx={{
+              display: { xs: 'block', sm: 'none' },
+              '& .MuiDrawer-paper': { boxSizing: 'border-box', width: drawerWidth },
+            }}
+          >
+            {drawer}
+          </Drawer>
+          <Drawer
+            variant="permanent"
+            sx={{
+              display: { xs: 'none', sm: 'block' },
+              '& .MuiDrawer-paper': { boxSizing: 'border-box', width: drawerWidth },
+            }}
+            open
+          >
+            {drawer}
+          </Drawer>
+        </Box>
+      </Box>
+    </ThemeProvider>
   );
 }
 
-export default Sidebar;
+ResponsiveDrawer.propTypes = {
+  window: PropTypes.func,
+};
+
+export default ResponsiveDrawer;
+

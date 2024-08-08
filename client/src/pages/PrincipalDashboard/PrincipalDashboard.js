@@ -290,9 +290,9 @@ const Dashboard3 = () => {
 <div className="app-container app-theme-white body-tabs-shadow fixed-sidebar fixed-header" id="appContent">
         <div className="app-main">
           <SideBar />
-          <div className="app-main-outer">
-            <div className="app-main-inner">
-              <div className="row">
+          <div className="col mt-4">
+          <div className="row">
+              
                 <div className="col-md-6 col-xl-4">
                   <div className="card mb-3 widget-content bg-midnight-bloom">
                     <div className="widget-content-wrapper text-white">
@@ -371,13 +371,14 @@ const Dashboard3 = () => {
                     </div>
                   </div>
                 </div>
-              </div>
+          
               <div className="row" id="deleteTableItem">
                 <div className="col-md-12">
                   <div className="card mb-5">
                     <div className="card-body">
 
                     <h4 className="mb-2 text-center">Students of the {schoolName}</h4>
+                    <div className="table-responsive-lg">   
             <table className="table table-bordered">
               <thead>
               <tr className="text-center">
@@ -415,11 +416,13 @@ const Dashboard3 = () => {
             </div>
             </div>
             </div>
+            </div>
             <div className="row" id="deleteTableItem">
                 <div className="col-md-12">
                   <div className="card mb-5">
                     <div className="card-body">
             <h4 className="mb-2 text-center">Teachers of the {schoolName}</h4>
+            <div className="table-responsive-lg">
             <table className="table table-bordered">
               <thead>
               <tr className="text-center">
@@ -456,27 +459,29 @@ const Dashboard3 = () => {
             </div>
             </div>
             </div>
-            <div className="row" id="deleteTableItem">
-                <div className="col-md-12">
-                  <div className="card mb-5">
-                    <div className="card-body">
-                      <Container style={{ marginTop: "20px" }}>
-                        <Box sx={{ display: 'flex', justifyContent: 'space-between', marginBottom: 2 }}>
-                          <Card sx={{ flex: 1, marginRight: 2, height: '250px' }}>
-                            <Bar data={chartData} options={chartOptions} />
-                          </Card>
-                          <Card sx={{ flex: 1, marginRight: 2, height: '250px' }}>
-                            <Line data={lineData} options={chartOptions} />
-                          </Card>
-                          <Card sx={{ height: '250px' }}>
-                            <Pie data={pieData} options={chartOptions} />
-                          </Card>
-                        </Box>
-                      </Container>
+            </div>
+            <div className="row">
+                        <div className="col-md-6 mb-5">
+                            <div className="card">
+                                <div className="card-body">
+                                    <h5 className="card-title">Teacher, Student, and Course Overview (Bar Chart)</h5>
+                                    <div className="chart-container" style={{ position: 'relative', height: '40vh' }}>
+                                        <Bar data={chartData} options={chartOptions} />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                        <div className="col-md-6 mb-5">
+                            <div className="card">
+                                <div className="card-body">
+                                    <h5 className="card-title">Teacher, Student, and Course Overview (Line Chart)</h5>
+                                    <div className="chart-container" style={{ position: 'relative', height: '40vh' }}>
+                                        <Line data={lineData} options={chartOptions} />
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
                     </div>
-                  </div>
-                </div>
-              </div>
           </div>
         </div>
    

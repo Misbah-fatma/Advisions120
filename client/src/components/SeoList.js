@@ -1,5 +1,4 @@
 import React, { useState } from 'react';
-import { Helmet } from 'react-helmet';
 import axios from 'axios';
 import PropTypes from 'prop-types';
 import {
@@ -17,8 +16,12 @@ import {
   TableHead,
   TableRow,
   Paper,
+  IconButton,
+  useMediaQuery,
+  useTheme
 } from '@mui/material';
-import SideBar from "../pages/AdminDashBoard/SideBar";
+import EditIcon from '@mui/icons-material/Edit';
+import DeleteIcon from '@mui/icons-material/Delete';
 
 const SeoList = ({ seoEntries, fetchSeoEntries }) => {
   const [isModalOpen, setIsModalOpen] = useState(false);
@@ -62,107 +65,113 @@ const SeoList = ({ seoEntries, fetchSeoEntries }) => {
     });
   };
 
+  const theme = useTheme();
+  const fullScreen = useMediaQuery(theme.breakpoints.down('sm'));
+
   return (
-    <div>
-      <div className="row" id="deleteTableItem">
-        <div className="col-md-12">
+    <div className="container mt-4">
+      <TableContainer component={Paper}>
+        <Table>
+          <TableHead>
+            <TableRow>
+              <TableCell>Title</TableCell>
+              <TableCell>Description</TableCell>
+              <TableCell>Keywords</TableCell>
+              <TableCell>Author</TableCell>
+              <TableCell>Actions</TableCell>
+            </TableRow>
+          </TableHead>
+          <TableBody>
+            {Array.isArray(seoEntries) && seoEntries.length > 0 ? (
+              seoEntries.map((entry) => (
+                <TableRow key={entry._id}>
+                  <TableCell>{entry.title}</TableCell>
+                  <TableCell>{entry.description}</TableCell>
+                  <TableCell>{entry.keywords.join(', ')}</TableCell>
+                  <TableCell>{entry.author}</TableCell>
+                  <TableCell>
+                    <IconButton onClick={() => handleEdit(entry)} color="primary">
+                      <EditIcon />
+                    </IconButton>
+                    <IconButton onClick={() => handleDelete(entry._id)} color="secondary">
+                      <DeleteIcon />
+                    </IconButton>
+                  </TableCell>
+                </TableRow>
+              ))
+            ) : (
+              <TableRow>
+                <TableCell colSpan={5} align="center">
+                  No SEO entries available.
+                </TableCell>
+              </TableRow>
+            )}
+          </TableBody>
+        </Table>
+      </TableContainer>
 
-              <TableContainer component={Paper}>
-                <Table>
-                  <TableHead>
-                    <TableRow>
-                      <TableCell>Title</TableCell>
-                      <TableCell>Description</TableCell>
-                      <TableCell>Keywords</TableCell>
-                      <TableCell>Author</TableCell>
-                      <TableCell>Actions</TableCell>
-                    </TableRow>
-                  </TableHead>
-                  <TableBody>
-                    {Array.isArray(seoEntries) && seoEntries.length > 0 ? (
-                      seoEntries.map((entry) => (
-                        <TableRow key={entry._id}>
-                          <TableCell>{entry.title}</TableCell>
-                          <TableCell>{entry.description}</TableCell>
-                          <TableCell>{entry.keywords.join(', ')}</TableCell>
-                          <TableCell>{entry.author}</TableCell>
-                          <TableCell>
-                            <Button onClick={() => handleEdit(entry)}>Edit</Button>
-                            <Button onClick={() => handleDelete(entry._id)}>Delete</Button>
-                          </TableCell>
-                        </TableRow>
-                      ))
-                    ) : (
-                      <TableRow>
-                        <TableCell colSpan={5} align="center">
-                          No SEO entries available.
-                        </TableCell>
-                      </TableRow>
-                    )}
-                  </TableBody>
-                </Table>
-              </TableContainer>
-
-              <Dialog open={isModalOpen} onClose={() => setIsModalOpen(false)}>
-                <DialogTitle>Edit SEO Entry</DialogTitle>
-                <DialogContent>
-                  <DialogContentText>Edit the details of the SEO entry.</DialogContentText>
-                  <TextField
-                    autoFocus
-                    margin="dense"
-                    name="title"
-                    label="Title"
-                    type="text"
-                    fullWidth
-                    value={updatedEntry.title}
-                    onChange={handleChange}
-                  />
-                  <TextField
-                    margin="dense"
-                    name="description"
-                    label="Description"
-                    type="text"
-                    fullWidth
-                    value={updatedEntry.description}
-                    onChange={handleChange}
-                  />
-                  <TextField
-                    margin="dense"
-                    name="keywords"
-                    label="Keywords"
-                    type="text"
-                    fullWidth
-                    value={updatedEntry.keywords.join(', ')}
-                    onChange={(e) =>
-                      setUpdatedEntry({
-                        ...updatedEntry,
-                        keywords: e.target.value.split(', '),
-                      })
-                    }
-                  />
-                  <TextField
-                    margin="dense"
-                    name="author"
-                    label="Author"
-                    type="text"
-                    fullWidth
-                    value={updatedEntry.author}
-                    onChange={handleChange}
-                  />
-                </DialogContent>
-                <DialogActions>
-                  <Button onClick={() => setIsModalOpen(false)} color="primary">
-                    Cancel
-                  </Button>
-                  <Button onClick={handleUpdate} color="primary">
-                    Update
-                  </Button>
-                </DialogActions>
-              </Dialog>
-            </div>
-          </div>
-        </div>
-      
+      <Dialog
+        open={isModalOpen}
+        onClose={() => setIsModalOpen(false)}
+        fullScreen={fullScreen}
+        aria-labelledby="responsive-dialog-title"
+      >
+        <DialogTitle id="responsive-dialog-title">Edit SEO Entry</DialogTitle>
+        <DialogContent>
+          <DialogContentText>Edit the details of the SEO entry.</DialogContentText>
+          <TextField
+            autoFocus
+            margin="dense"
+            name="title"
+            label="Title"
+            type="text"
+            fullWidth
+            value={updatedEntry.title}
+            onChange={handleChange}
+          />
+          <TextField
+            margin="dense"
+            name="description"
+            label="Description"
+            type="text"
+            fullWidth
+            value={updatedEntry.description}
+            onChange={handleChange}
+          />
+          <TextField
+            margin="dense"
+            name="keywords"
+            label="Keywords"
+            type="text"
+            fullWidth
+            value={updatedEntry.keywords.join(', ')}
+            onChange={(e) =>
+              setUpdatedEntry({
+                ...updatedEntry,
+                keywords: e.target.value.split(', '),
+              })
+            }
+          />
+          <TextField
+            margin="dense"
+            name="author"
+            label="Author"
+            type="text"
+            fullWidth
+            value={updatedEntry.author}
+            onChange={handleChange}
+          />
+        </DialogContent>
+        <DialogActions>
+          <Button onClick={() => setIsModalOpen(false)} color="primary">
+            Cancel
+          </Button>
+          <Button onClick={handleUpdate} color="primary">
+            Update
+          </Button>
+        </DialogActions>
+      </Dialog>
+    </div>
   );
 };
 

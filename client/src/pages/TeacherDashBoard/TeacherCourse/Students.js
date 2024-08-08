@@ -67,8 +67,8 @@ const StudentList = () => {
       <div className="app-container app-theme-white body-tabs-shadow fixed-sidebar fixed-header" id="appContent">
         <div className="app-main">
           <Sidebar />
-          <div className="app-main-outer">
-            <div className="app-main-inner">
+          <div className="col mt-4">
+          <div className="row">
               <div className="page-title-actions px-3 d-flex">
                 <nav aria-label="breadcrumb">
                   <ol className="breadcrumb">

@@ -44,3 +44,9 @@
     margin-right: 10px;
   }
   
+  /* Dashboard3.css */
+@media (max-width: 600px) {
+  .widget-content-right .widget-numbers {
+      margin: 0;
+  }
+}

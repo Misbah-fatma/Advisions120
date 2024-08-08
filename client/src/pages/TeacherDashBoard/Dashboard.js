@@ -246,8 +246,8 @@ const Dashboard3 = ({ course }) => {
       <div className="app-container app-theme-white body-tabs-shadow fixed-sidebar fixed-header" id="appContent">
         <div className="app-main">
           <SideBar />
-          <div className="app-main-outer">
-            <div className="app-main-inner">
+          <div className="col mt-4">
+          <div className="row">
               <div className="row">
                 <div className="col-md-6 col-xl-4">
                   <div className="card mb-3 widget-content bg-midnight-bloom">
@@ -391,7 +391,7 @@ const Dashboard3 = ({ course }) => {
                   </div>
                 </div>
               </div>
-              <div className="row" id="deleteTableItem">
+              {/* <div className="row" id="deleteTableItem">
                 <div className="col-md-4 col-lg-4">
                   <div className="card mb-5">
                     <div className="card-body">
@@ -421,7 +421,7 @@ const Dashboard3 = ({ course }) => {
     </div>
     </div>
     </div>
-    </div>
+    </div> */}
     </div>
             </div>
           </div>

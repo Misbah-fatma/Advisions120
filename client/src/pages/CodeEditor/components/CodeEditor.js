@@ -18,6 +18,7 @@ import {
   DrawerContent,
   DrawerCloseButton,
   useDisclosure,
+  VStack,
   HStack
 } from "@chakra-ui/react";
 import { Editor } from "@monaco-editor/react";
@@ -160,7 +161,7 @@ const CodeEditor = () => {
                 width="100%"
                 height="80vh"
                 color={textColor}
-                p={4}
+       
                 borderRadius="md"
                 overflowY="scroll"
                 sx={{
@@ -190,10 +191,12 @@ const CodeEditor = () => {
           </TabPanels>
         </Tabs>
       ) : (
-        <Box height="100vh" display="flex" bg={bgColor}>
-          <Box width="100%" height="100%" display="flex" flexDirection="column" color={textColor}>
-            <HStack justifyContent="space-between" mb={4}>
-              <LanguageSelector language={language} onSelect={onSelect} />
+        <Box height="90vh" display="flex" bg={bgColor} mt={2}>
+          <VStack spacing={4} width="5%" bg={bgColor} p={2}>
+            <LanguageSelector language={language} onSelect={onSelect} />
+          </VStack>
+          <Box width="95%" height="100%" display="flex" flexDirection="column" color={textColor}>
+            <HStack justifyContent="space-between" mb={4} p={2}>
               <Button colorScheme="blue" onClick={onSave}>Save</Button>
               <Button colorScheme="blue" onClick={onOpen}>Open Sidebar</Button>
             </HStack>
