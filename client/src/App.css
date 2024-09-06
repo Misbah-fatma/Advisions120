@@ -5,11 +5,11 @@
     column-gap: 5px;
    }
    
-   img {
+   /* img {
      max-width: 100%;
      max-height:100%;
    }
-   
+    */
    .text {
      font-size: 70px;
    }
@@ -77,5 +77,56 @@
 
 @keyframes spin {
   to { transform: rotate(360deg); }
+}
+
+
+
+.section-title {
+  position: relative;
+  padding-bottom: 1.5rem; /* Adjust spacing as needed */
+}
+
+.try-now-link {
+  position: absolute;
+  right: 0;
+  bottom: 6.5rem;
+  font-size: 0.875rem; /* Adjust the size as needed */
+  text-decoration: none;
+  color: #007bff; /* Adjust the color as needed */
+  white-space: nowrap; /* Prevent text from wrapping */
+}
+
+.try-now-link i {
+  font-size: 0.75rem; /* Adjust the icon size as needed */
+}
+
+@media (max-width: 768px) {
+  .section-title {
+      position: static;
+      text-align: center;
+  }
+
+  .try-now-link {
+      position: static;
+      display: inline-block;
+      margin-top: 1rem; /* Add some space above the link */
+      font-size: 0.75rem; /* Adjust the size for smaller screens */
+  }
+}
+
+
+.icon-boundary {
+  width: 80px;
+  height: 80px;
+  border: 2px solid #007bff; /* Adjust the color as needed */
+  border-radius: 50%; /* Makes the boundary circular */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  margin: 0 auto; /* Center the icon boundary */
+}
+
+.tm-icon {
+  color: #007bff; /* Adjust the icon color as needed */
 }
 

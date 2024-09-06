@@ -9,7 +9,8 @@ const {
   getCoursesByUserId,
   createLectures,
   updateLecture,
-  deleteLecture
+  deleteLecture,
+  getCoursesWithDetails
 
 } = require("../controllers/courseController");
 
@@ -17,13 +18,11 @@ const { adminAuthentication } = require("../middlewares/authentication");
 const { requireLogin } = require("../middlewares/requireLogin");
 const User = require("../model/UserModel");
 const Course = require("../model/CourseModel");
+const DetailsCourses  = require("../model/DetailsCoursesModel");
 const router = require("express").Router();
 const upload = require("../middlewares/multer");
 const cloudinary=require('../middlewares/cloudinary');
 
-const uploadLectureFiles = upload.fields([
-  { name: 'lecturePdf', maxCount: 10 }
-]);
 
 router.post(
   "/post-course",
@@ -143,7 +142,7 @@ router.put('/courses/:id', upload.fields([{ name: 'courseThumbnail', maxCount: 1
   }
 });
 
-router.get('/api/purchasecourse/:courseId', async (req, res) => {
+router.get('/api/purchasecourse/:courseId',requireLogin, async (req, res) => {
   try {
     const courseId = req.params.courseId;
     console.log('Received courseId:', courseId);
@@ -156,5 +155,83 @@ router.get('/api/purchasecourse/:courseId', async (req, res) => {
     res.status(500).send('Server error');
   }
 });
+
+
+router.get('/getcoursedetails/:id', async (req, res) => {
+  try {
+      const courseid = req.params.id;
+      const course = await Course.findById(courseid).populate('details'); // Assuming you populate details if it's a reference
+
+      if (!course) {
+          return res.status(404).json({ message: 'Course not found' });
+      }
+
+      res.json(course);
+  } catch (error) {
+      console.error('Error fetching course:', error);
+      res.status(500).json({ message: 'Server error' });
+  }
+});
+
+router.get('/courses', getCoursesWithDetails);
+
+router.get('/:courseId', async (req, res) => {
+  try {
+      const course = await Course.findById(req.params.courseId);
+      if (!course) {
+          return res.status(404).json({ message: 'Course not found' });
+      }
+      res.json(course.details || {});
+  } catch (error) {
+      console.error('Error fetching course:', error);
+      res.status(500).json({ message: 'Server error' });
+  }
+});
+
+
+router.put('/:courseId/details', async (req, res) => {
+  try {
+      const { courseId } = req.params;
+      const { title, text, features, overview, cards } = req.body;
+
+      // Find the course by ID
+      const course = await Course.findById(courseId);
+      if (!course) {
+          return res.status(404).json({ message: 'Course not found' });
+      }
+
+      let updatedDetails;
+
+      // Check if course details already exist
+      if (course.details) {
+          // Update the existing details
+          updatedDetails = await DetailsCourses.findByIdAndUpdate(
+              course.details,
+              { title, text, features, overview, cards },
+              { new: true, runValidators: true }
+          );
+
+          if (!updatedDetails) {
+              return res.status(404).json({ message: 'Details not found' });
+          }
+      } else {
+          // Create new details and associate them with the course
+          const newDetails = new DetailsCourses({ title, text, features, overview, cards });
+          updatedDetails = await newDetails.save();
+
+          // Update the course with the new details ID
+          course.details = updatedDetails._id;
+          await course.save();
+      }
+
+      // Respond with the updated or newly created details
+      res.status(200).json(updatedDetails);
+  } catch (error) {
+      console.error('Error updating course details:', error);
+      res.status(500).json({ message: 'Server error' });
+  }
+});
+
+
 
 module.exports = router;

@@ -144,7 +144,7 @@ function ResponsiveDrawer(props) {
 
             <div className="option" onClick={() => toggleOptions('option5')}>
               <NavLink to="/newteachercourses" activeClassName="active-link vertical-nav-menu">
-                <i className="fa-solid fa-money-bill-transfer menu-icon"></i>
+              <i className="fa-solid fa-chalkboard-teacher menu-icon"></i>
                 Create Course
               </NavLink>
 
@@ -152,16 +152,24 @@ function ResponsiveDrawer(props) {
 
             <div className="option" onClick={() => toggleOptions('option7')}>
               <NavLink to="/studentDetails" activeClassName="active-link vertical-nav-menu">
-                <i className="fa-solid fa-credit-card menu-icon"></i>
+              <i className="fa-solid fa-user-graduate menu-icon"></i>
                 Student Details
               </NavLink>
             </div>
             <div className="option" onClick={() => toggleOptions('option7')}>
               <NavLink to="/teachercreateStudent" activeClassName="active-link vertical-nav-menu">
-                <i className="fa-solid fa-credit-card menu-icon"></i>
+              <i className="fa-solid fa-user-plus menu-icon"></i>
                 Create Student
               </NavLink>
             </div>
+            <div className="option" onClick={() => toggleOptions('option7')}>
+              <NavLink to="/liveClass/teacher" activeClassName="active-link vertical-nav-menu">
+              <i className="fa-solid fa-calendar-alt menu-icon"></i>
+                Schedule Class
+              </NavLink>
+            </div>
+
+   
             <div className="option" onClick={() => toggleOptions('option7')}>
               <NavLink activeClassName="active-link vertical-nav-menu">
                 <i className="fa-solid fa-credit-card menu-icon"></i>

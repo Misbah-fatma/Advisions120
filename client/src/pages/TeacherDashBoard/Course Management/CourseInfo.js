@@ -4,15 +4,20 @@ import { useDispatch, useSelector } from "react-redux";
 import { fetchAllCourseInfo, startLiveClassForStudents } from "../../../redux/course/courseAction";
 import TablePagination from "@mui/material/TablePagination";
 import LiveClass from "../../LiveClass/LiveClass";
+import { useNavigate } from 'react-router-dom';
 
 const CourseInfo = ({ course }) => {
     const courseData = useSelector((state) => state.course.courseInfo);
     const dispatch = useDispatch();
+    const navigate = useNavigate();
     const [page, setPage] = useState(0);
     const [rowsPerPage, setRowsPerPage] = useState(5);
     const [isLive, setIsLive] = useState(false);
-    const courseId1 = courseData._id;
-    const teacher = courseData.teacher;
+    const firstCourse = Array.isArray(courseData) && courseData.length > 0 ? courseData[0] : {};
+    const courseId1 = firstCourse._id;
+    const teacher = firstCourse.teacher;
+
+    console.log(courseId1, teacher, courseData);
 
     useEffect(() => {
         dispatch(fetchAllCourseInfo());
@@ -28,13 +33,19 @@ const CourseInfo = ({ course }) => {
     };
 
     const startLiveClass = () => {
-        const courseId = {courseId1}; // replace with actual course ID
-        const teacherId = {teacher}; // replace with actual teacher ID
-
-        // Notify students by storing the link in the database
-        dispatch(startLiveClassForStudents(courseId, teacherId));
-        setIsLive(true);
+        const firstCourse = Array.isArray(courseData) && courseData.length > 0 ? courseData[0] : {};
+        const courseId = firstCourse._id;
+        const teacherName = firstCourse.teacher;
+        const teacherRole = "Teacher"; 
+        
+        if (courseId && teacherName) {
+            const liveClassLink = `/live-class/${courseId}/${teacherName}`;
+            navigate(liveClassLink, { state: { courseId, teacherName, teacherRole } });
+        } else {
+            console.error("Course ID or Teacher Name is missing.");
+        }
     };
+    
 
     return (
         <div>
@@ -109,13 +120,9 @@ const CourseInfo = ({ course }) => {
                                     <div className="card mb-5">
                                         <div className="card-body">
                                             <div className="table-responsive">
-                                                <button onClick={startLiveClass}>Start Live Class</button>
-                                                {isLive && (
-        <>
-          <LiveClass  />
-   
-        </>
-      )}
+                                            <button onClick={startLiveClass}>
+        Start Live Class
+      </button>
                                             </div>
                                         </div>
                                     </div>

@@ -12,47 +12,7 @@ export default function Home() {
     return (
         <>
         <Navbar/>
-            {
-                frontends.map((item, index) => {
-                    console.log(item.des);
-                    return <div key={index} className="container-fluid pt-5 bg-primary hero-header  mb-5" style={{ background: `url(/assets/img/${item.pic})`, backgroundSize: "cover" }}>
-                        <div className="container pt-5">
-                            <div className="row g-5 pt-5">
-                                <div className="col-lg-6 align-self-center text-center text-lg-start mb-lg-5">
-                                    <div className="btn btn-sm border rounded-pill text-white px-3 mb-3 animated slideInRight">AI.Tech</div>
-                                    <h1 className="display-4 text-white mb-4 animated slideInRight">{item.des}</h1>
-                                    <p className="text-white mb-4 animated slideInRight">Enhance Your Vision, Transform Your Life</p>
-                                    {/* <a href="*" className="btn btn-light py-sm-3 px-sm-5 rounded-pill me-3 animated slideInRight">Read More</a> */}
-                                    <a href="*" className="btn btn-outline-light py-sm-3 px-sm-5 rounded-pill animated slideInRight">Contact Us</a>
-                                </div>
-                                <div className="col-lg-6 align-self-end text-center text-lg-end">
-                                    <img className="img-fluid" src="assets/img/hero-img.png" alt="*" />
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                })
-            }
-            {/* <!-- Hero End --> */}
-            <div className="container-fluid pt-5 bg-primary hero-header">
-        <div className="container pt-5">
-            <div className="row g-5 pt-5">
-                <div className="col-lg-6 align-self-center text-center text-lg-start mb-lg-5">
-                    <h1 className="display-4 text-white mb-4 animated slideInRight">About Us</h1>
-                    <nav aria-label="breadcrumb">
-                        <ol className="breadcrumb justify-content-center justify-content-lg-start mb-0">
-                            <li className="breadcrumb-item"><a className="text-white" href="*">Home</a></li>
-                            <li className="breadcrumb-item text-white active" aria-current="page">About Us</li>
-                        </ol>
-                    </nav>
-                </div>
-                <div className="col-lg-6 align-self-end text-center text-lg-end">
-                    <img className="img-fluid" src="assets/img/hero-img.png" alt="*" style={{maxHeight: "300px"}}/>
-                </div>
-            </div>
-        </div>
-    </div>
-
+     
             {/* <!-- Full Screen Search Start --> */}
             <div className="modal fade" id="searchModal" tabIndex="-1">
                 <div className="modal-dialog modal-fullscreen">

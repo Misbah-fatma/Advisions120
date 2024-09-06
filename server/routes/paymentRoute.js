@@ -13,12 +13,20 @@ router.route("/checkout").post(checkout);
 router.route("/paymentverification").post(paymentVerification);
 
 router.get('/purchased-courses', requireLogin, async (req, res) => {
+
+
+  if (!req.user) {
+    return res.status(401).json({ success: false, error: "User not authenticated" });
+  }
+
   const userId = req.user._id;
 
   try {
     const payments = await Payment.find({ user: userId }).populate('course');
 
-    const purchasedCourses = payments.map(payment => payment.course).filter(course => course != null);
+    const purchasedCourses = payments
+      .map(payment => payment.course)
+      .filter(course => course != null);
 
     res.status(200).json({ success: true, courses: purchasedCourses });
   } catch (error) {

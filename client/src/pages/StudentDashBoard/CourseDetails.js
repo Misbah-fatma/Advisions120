@@ -54,7 +54,13 @@ const CourseDetail = () => {
   useEffect(() => {
     const fetchCourse = async () => {
       try {
-        const response = await axiosInstance.get(`/api/purchasecourse/${courseId}`);
+        const response = await axiosInstance.get(`/api/purchasecourse/${courseId}`,
+          {
+            headers: {
+                Authorization: "Bearer " + localStorage.getItem("auth_token"),
+            },
+          }
+        );
         setCourse(response.data);
         if (response.data.lectures && response.data.lectures.length > 0) {
           setSelectedLecture(response.data.lectures[0]); // Set the first lecture as selected

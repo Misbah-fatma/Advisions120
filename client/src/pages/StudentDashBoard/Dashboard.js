@@ -292,8 +292,13 @@ const Student = ({ studentId }) => {
   useEffect(() => {
     const fetchLiveClasses = async () => {
       try {
-        const response = await axiosInstance.get(`/api/live-classes/student/${studentId}`,
-          
+        const token = localStorage.getItem('auth_token');
+        const response = await axiosInstance.get(`/live-classes/student/${studentId}`,
+          {
+            headers: {
+              Authorization: "Bearer " + token,
+            }
+          }
         );
         setLiveClasses(response.data);
       } catch (error) {
@@ -333,7 +338,7 @@ const Student = ({ studentId }) => {
                                 <th><strong>User Email</strong></th>
                                 <th><strong>Number of Room Created</strong></th>
                                 <th><strong>Role</strong></th>
-                                {/* <th><strong>Live Class</strong></th> */}
+                                <th><strong>Live Class</strong></th>
                               </tr>
                             </thead>
                             <tbody>
@@ -348,19 +353,20 @@ const Student = ({ studentId }) => {
                                   )}
                                 </td>
                                 <td className="tableId"><span></span> {activity}</td>
-                                {/* <List>
-      {liveClasses.map((liveClass) => (
-        <ListItem key={liveClass._id}>
-          <ListItemText
-            primary={liveClass.title}
-            secondary={`Scheduled at: ${new Date(liveClass.dateTime).toLocaleString()}`}
-          />
-          <Button href={liveClass.link} target="_blank" rel="noopener noreferrer">
-            Join Class
-          </Button>
-        </ListItem>
-      ))}
-    </List> */}
+                                <td>
+  {Array.isArray(liveClasses) && liveClasses.map((liveClass) => (
+    <ListItem key={liveClass._id}>
+      <ListItemText
+        primary={`Title : ${liveClass.title}`}
+        secondary={`Scheduled at: ${new Date(liveClass.dateTime).toLocaleString()}`}
+      />
+      <Button href={liveClass.link} target="_blank" rel="noopener noreferrer">
+        Join Class
+      </Button>
+    </ListItem>
+  ))}
+</td>
+
                               </tr>
                             </tbody>
                           </table>

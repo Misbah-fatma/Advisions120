@@ -1,52 +1,49 @@
-// LiveClassPage.js
-import React, { useEffect } from 'react';
-import { useParams } from 'react-router-dom';
+import React from 'react';
+import { useLocation } from 'react-router-dom';
+import { JitsiMeeting } from '@jitsi/react-sdk';
 
-const LiveClassPage = () => {
-  const { courseId, teacherId } = useParams();
+const LiveClass = () => {
+  const location = useLocation();
+  const { courseId, teacherName, teacherRole } = location.state || {}; // Extract courseId, teacherName, and teacherRole from location state
 
-  useEffect(() => {
-    const domain = 'meet.jit.si';
-    const options = {
-      roomName: `${courseId}-${teacherId}`,
-      width: '100%',
-      height: '100%',
-      parentNode: document.getElementById('jitsi-container'),
-      configOverwrite: {
-        recordingType: 'jibri',
-        startWithAudioMuted: true,
-        startWithVideoMuted: true,
-      },
-      interfaceConfigOverwrite: {
-        TOOLBAR_BUTTONS: [
-          'microphone', 'camera', 'closedcaptions', 'desktop', 'fullscreen', 'fodeviceselection', 'hangup', 'profile', 'chat',
-          'recording', 'livestreaming', 'etherpad', 'sharedvideo', 'settings', 'raisehand', 'videoquality', 'filmstrip',
-          'invite', 'feedback', 'stats', 'shortcuts', 'tileview', 'videobackgroundblur', 'download', 'help', 'mute-everyone',
-          'e2ee', 'security'
-        ],
-      },
-    };
+  const roomName = courseId || "defaultRoom"; // Use courseId as the room name or fallback to "defaultRoom"
+  const domain = "meet.jit.si";
 
-    if (window.JitsiMeetExternalAPI) {
-      const api = new window.JitsiMeetExternalAPI(domain, options);
+  const isModerator = teacherRole === "Teacher"; // Check if the role is Teacher
 
-      api.addEventListener('videoConferenceJoined', () => {
-        console.log('Local User Joined');
-      });
+  // Debugging outputs
+  console.log("Domain:", domain);
+  console.log("Room Name:", roomName);
+  console.log("Teacher Name:", teacherName);
+  console.log("Teacher Role:", teacherRole);
+  console.log("Is Moderator:", isModerator);
 
-      api.addEventListener('videoConferenceLeft', () => {
-        console.log('Local User Left');
-      });
-
-      return () => {
-        api.dispose();
-      };
-    } else {
-      console.error('JitsiMeetExternalAPI not loaded');
-    }
-  }, [courseId, teacherId]);
-
-  return <div id="jitsi-container" style={{ width: '100%', height: '100vh' }} />;
+  return (
+    <div style={{ height: "100vh", display: "grid", flexDirection: "column" }}>
+      <JitsiMeeting
+        roomName={roomName}
+        displayName={teacherName || "Anonymous"} // Use teacherName as displayName or fallback to "Anonymous"
+        domain={domain}
+        containerStyles={{ display: "flex", flex: 1 }}
+        configOverwrite={{
+          startWithAudioMuted: true,
+          startWithVideoMuted: true,
+          prejoinPageEnabled: false,
+          disableModeratorIndicator: !isModerator,
+          enableUserRolesBasedOnToken: isModerator,
+        }}
+        interfaceConfigOverwrite={{
+          SHOW_JITSI_WATERMARK: false,
+          DEFAULT_REMOTE_DISPLAY_NAME: 'Fellow Jitster',
+          TOOLBAR_BUTTONS: [
+            'microphone', 'camera', 'chat', 'desktop', 'fullscreen',
+            'fodeviceselection', 'hangup', 'profile', 'raisehand',
+            'settings', 'videoquality', 'tileview', 'download', 'help'
+          ],
+        }}
+      />
+    </div>
+  );
 };
 
-export default LiveClassPage;
+export default LiveClass;

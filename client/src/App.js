@@ -116,6 +116,9 @@ import JoinUs from "./pages/LandingPage/SchoolRegistration.js";
 import SchoolRegistered from './pages/AdminDashBoard/Notifications/SchoolRegistered.js';
 import TeacherRegistered from './pages/AdminDashBoard/Notifications/TeacherRegistration.js';
 import PrincipalApproval from './pages/PrincipalDashboard/PrincipalApproval.js';
+import LiveClass from "./pages/LiveClass/LiveClass.js";
+import LiveClassTeacher from "./pages/TeacherDashBoard/LiveClass.js";
+import CourseDetails from './pages/LandingPage/CourseDetails.js';
 
 const Routing = () => {
   const isAdmin = true; 
@@ -151,6 +154,13 @@ const Routing = () => {
       <Route exact path="/joinus"  element={<JoinUs />}>
       
       </Route>
+
+      <Route path="/live-class/:courseId/:teacherName" element={<LiveClass />} />
+
+      <Route exact path="/courseDetails/:id" element={<CourseDetails />} />
+
+      
+      <Route path="/liveClass/teacher" element={<LiveClassTeacher />} />
 
       <Route exact path="/schoolRegistered"  element={<SchoolRegistered />}>
       

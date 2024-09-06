@@ -1,7 +1,7 @@
 const init = () => {
   // Try to load the initial cart state from local storage
   const localCart = localStorage.getItem('cart');
-  console.log(localCart)
+
   return localCart ? JSON.parse(localCart) : [];
 };
 
@@ -14,7 +14,7 @@ const handleCart = (state = init(), action) => {
       const exist = state.find((item) => 
       item.product._id === productToAdd._id);
      
-      console.log('in addning item', action.payload, 'exist' , exist);
+
       if (exist) {
         // Product exists, update quantity
         newState = state.map((item) => 

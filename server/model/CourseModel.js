@@ -64,6 +64,11 @@ reviews: [
   },
 ],
 
+details: { 
+  type: mongoose.Schema.Types.ObjectId, 
+  ref: 'DetailsCourses' 
+}
+
 
   },
   {

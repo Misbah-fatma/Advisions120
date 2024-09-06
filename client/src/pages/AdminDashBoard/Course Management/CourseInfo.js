@@ -3,12 +3,12 @@ import Sidebar from '../SideBar';
 import { useDispatch, useSelector } from "react-redux";
 import { fetchAllCourseInfo, deleteCourseItem } from "../../../redux/course/courseAction";
 import { Link } from "react-router-dom";
-import { IconButton, Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, TextField, Button } from "@mui/material";
-import { DataGrid } from '@mui/x-data-grid';
-import DeleteIcon from "@mui/icons-material/Delete";
-import EditIcon from "@mui/icons-material/Edit";
+import { Dialog, DialogActions, DialogContent, DialogContentText, DialogTitle, TextField } from "@mui/material";
 import axios from "axios";
-import { GridToolbar } from '@mui/x-data-grid';
+import { IconButton, Button, Typography, Table, TableBody, TableCell, TableContainer, TableHead, TableRow, Paper, Accordion, AccordionSummary, AccordionDetails } from '@mui/material';
+import { Edit as EditIcon, Delete as DeleteIcon, ExpandMore as ExpandMoreIcon } from '@mui/icons-material';
+import EditCourseDetailsModal from './DetailsEditModeal';
+
 
 const CourseInfo = () => {
     const dispatch = useDispatch();
@@ -24,11 +24,11 @@ const CourseInfo = () => {
     const [openDeleteLectureDialog, setOpenDeleteLectureDialog] = useState(false);
     const [courseToDelete, setCourseToDelete] = useState(null);
     const [lectureToDelete, setLectureToDelete] = useState(null);
-    const [popUpText, setpopUp] = useState('');
 
     const confirmDeleteoneCourse = (courseId) => {
         setCourseToDelete(courseId);
         setOpenDeleteCourseDialog(true);
+        dispatch(fetchAllCourseInfo());
     };
 
     const confirmDeleteLecture = (lectureId) => {
@@ -71,6 +71,7 @@ const CourseInfo = () => {
         handleCloseDeleteLectureDialog();
     };
 
+
     useEffect(() => {
         const userDataFromStorage = localStorage.getItem('user');
         if (userDataFromStorage) {
@@ -80,15 +81,11 @@ const CourseInfo = () => {
 
     const userId = userData ? userData._id : null;
     const courseData = useSelector((state) => state.course.courseInfo || []);
-    console.log(courseData)
     const axiosInstance = axios.create({ baseURL: process.env.REACT_APP_API_URL });
 
     useEffect(() => {
         dispatch(fetchAllCourseInfo());
     }, [dispatch]);
-
-    const filteredCourses = useMemo(() => Array.isArray(courseData) ?
-        courseData.filter(course => course.teacher === userId) : [], [courseData, userId]);
 
     const editLectureHandler = (lecture) => {
         setCurrentLecture(lecture);
@@ -99,6 +96,7 @@ const CourseInfo = () => {
         setCurrentCourse(course);
         setOpenEditCourseDialog(true);
     };
+
 
     const handleEditDialogClose = () => {
         setOpenEditDialog(false);
@@ -148,7 +146,6 @@ const CourseInfo = () => {
             formData.append("courseDescription", currentCourse.courseDescription);
             formData.append("coursePrice", currentCourse.coursePrice);
             formData.append("courseLink", currentCourse.courseLink);
-            formData.append("popUpText", currentCourse.popUpText);
             if (currentCourseThumbnail) {
                 formData.append("courseThumbnail", currentCourseThumbnail);
             }
@@ -203,208 +200,421 @@ const CourseInfo = () => {
         setCurrentCourse(prevState => ({ ...prevState, [name]: value }));
     };
 
-    const courseColumns = [
-        { field: 'courseThumbnail', headerName: 'Course', renderCell: (params) => (
-            <div className="listproduct-section">
-                <div className="listproducts-image">
-                    <img
-                        style={{ height: "40px", width: "60px", objectFit: "contain" }}
-                        src={params.value}
-                        alt=""
-                    />
-                </div>
-                <div className="product-pera">
-                    <p className="priceDis">
-                        {params.row.courseName}
-                    </p>
-                </div>
-            </div>
-        ) },
-        { field: 'courseDescription', headerName: 'Description', width: 200 },
-        { field: 'coursePrice', headerName: 'Price', width: 100 },
-        { field: 'teacherName', headerName: 'Instructor', width: 150 },
-        { field: 'courseLink', headerName: 'Course Link', width: 200 },
-        { field: 'coursePdf', headerName: 'Course Pdf', renderCell: (params) => (
-            <a href={params.value}>Pdf Url</a>
-        ) },
-        { field: 'status', headerName: 'Status', renderCell: () => (
-            <div className="statusItem">
-                <div className="circleDot animatedCompleted"></div>
-                <div className="statusText">
-                    <span className="stutsCompleted">Active</span>
-                </div>
-            </div>
-        ) },
-        { field: 'addLecture', headerName: 'Add Lecture', renderCell: (params) => (
-            <Link to="/createAdminLectures/" state={params.row._id}>
-                <EditIcon color="primary" />
-            </Link>
-        ) },
-        { field: 'actions', headerName: 'Actions', renderCell: (params) => (
-            <div>
-                <IconButton onClick={() => confirmDeleteoneCourse(params.row._id)}>
-                    <DeleteIcon color="secondary" />
-                </IconButton>
-                <IconButton onClick={() => editCourseHandler(params.row)}>
-                    <EditIcon color="primary" />
-                </IconButton>
-            </div>
-        ) }
-    ];
 
-    const lectureColumns = [
-        { field: 'title', headerName: 'Title', width: 200 },
-        { field: 'description', headerName: 'Description', width: 200 },
-        { field: 'videoUrl', headerName: 'Video URL', width: 200 },
-        { field: 'pdfUrl', headerName: 'Pdf URL', width: 200 },
-        { field: 'actions', headerName: 'Actions', renderCell: (params) => (
-            <div>
-                <IconButton onClick={() => confirmDeleteLecture(params.row._id)}>
-                    <DeleteIcon color="secondary" />
-                </IconButton>
-                <IconButton onClick={() => editLectureHandler(params.row)}>
-                    <EditIcon color="primary" />
-                </IconButton>
-            </div>
-        ) }
-    ];
+    const [expandedCourses, setExpandedCourses] = useState({});
+
+    const toggleExpandCourse = (courseId) => {
+        setExpandedCourses((prevExpanded) => ({
+            ...prevExpanded,
+            [courseId]: !prevExpanded[courseId],
+        }));
+    };
+    const [openModal, setOpenModal] = useState(false);
+    const [selectedCourseId, setSelectedCourseId] = useState(null);
+
+    const handleEditDetails = (courseId) => {
+        setSelectedCourseId(courseId);
+        setOpenModal(true);
+    };
+
+    const handleCloseModal = () => {
+        setOpenModal(false);
+        setSelectedCourseId(null);
+    };
+
+    const handleSaveDetails = (updatedDetails) => {
+        dispatch(fetchAllCourseInfo());
+        console.log('Updated details:', updatedDetails);
+    };
+
 
     return (
-        <>
-         <div className="app-container app-theme-white body-tabs-shadow fixed-sidebar fixed-header" id="appContent">
-              <div className="app-main">
-            <Sidebar />
-            <div className="col mt-4">
-            <div className="row">
-              <div className="page-title-actions px-3 d-flex">
-                <nav aria-label="breadcrumb">
-                  <ol className="breadcrumb">
-                    <li className="breadcrumb-item"><a href="/">Dashboard</a></li>
-                    <li className="breadcrumb-item active" aria-current="page">Enrollment</li>
-                  </ol>
-                </nav>
-              </div>
-              <div className="row" id="deleteTableItem">
-                <div className="col-md-12">
-                  <div className="card mb-5">
-                    <div className="card-body">
-                      <div >
-            <div className="container mb-3 mt-3">
-                <div className="row">
-                    <div className="col-md-12">
-                        <div className="course-table">
-                            <div className="d-md-flex mb-3">
-                                <h4 className="navyBlueColor">Course Management</h4>
+        <div>
+            <div className="app-container app-theme-white body-tabs-shadow fixed-sidebar fixed-header" id="appContent">
+                <div className="app-main">
+                    <Sidebar />
+                    <div className="app-main-outer">
+                        <div className="app-main-inner">
+                            <div className="page-title-actions px-3 d-flex">
+                                <nav aria-label="breadcrumb">
+                                    <ol className="breadcrumb">
+                                        <li className="breadcrumb-item"><a href="">Dashboard</a></li>
+                                        <li className="breadcrumb-item active" aria-current="page">Course</li>
+                                    </ol>
+                                </nav>
+                                <div className="ms-auto mb-3">
+                                    <Link to="/newteachercourses" className="btn-shadow mr-3 btn btn-dark ms-auto">
+                                        + New Course
+                                    </Link>
+                                </div>
                             </div>
-                            {courseData.map(course => (
-                    <div key={course._id} style={{ marginTop: 20 }}>
-                        <h2>{course.courseName}</h2>
-                        <div >
-                            <DataGrid
-                                rows={[course]}
-                                columns={courseColumns}
-                               
-                                getRowId={(row) => row._id}
-                                components={{ Toolbar: GridToolbar }}
-                            />
-                        </div>
 
-                        <h3>Lectures for {course.courseName}</h3>
-                        <div>
-                            <DataGrid
-                                rows={course.lectures}
-                                columns={lectureColumns}
-                                getRowId={(row) => row._id}
-                                components={{ Toolbar: GridToolbar }}
-                            />
+                            <div className="row" id="deleteTableItem">
+                                <div className="col-md-12">
+                                    <div className="card mb-5">
+                                        <div className="card-body">
+                                            <TableContainer component={Paper} sx={{ marginTop: 3, marginBottom: 6 }}>
+                                                <Table aria-label="course table">
+                                                    <TableHead>
+                                                        <TableRow>
+                                                            <TableCell style={{ width: '20px' }}><strong>Course</strong></TableCell>
+
+                                                            <TableCell><strong>Description</strong></TableCell>
+                                                            <TableCell><strong>Price</strong></TableCell>
+                                                            <TableCell><strong>Creator</strong></TableCell>
+                                                            <TableCell><strong> Link</strong></TableCell>
+                                                            <TableCell style={{ width: '130px' }}><strong>View Pdf </strong></TableCell>
+                                                            <TableCell style={{ width: '130px' }}><strong>Add Lectures</strong></TableCell>
+                                                            <TableCell style={{ width: '130px' }}><strong> Action</strong></TableCell>
+                                                            <TableCell><strong> Show</strong></TableCell>
+                                                        </TableRow>
+                                                    </TableHead>
+                                                    <TableBody>
+                                                        {courseData.map((course) => (
+                                                            <React.Fragment key={course._id}>
+                                                                <TableRow>
+                                                                    <TableCell>
+                                                                        <div className="listproduct-section">
+                                                                            <div className="listproducts-image">
+                                                                                <img
+                                                                                    style={{ height: '40px', width: '60px', objectFit: 'contain' }}
+                                                                                    src={course.courseThumbnail}
+                                                                                    alt=""
+                                                                                />
+                                                                            </div>
+                                                                            <div className="product-pera">
+                                                                                <p>{course.courseName}</p>
+                                                                            </div>
+                                                                        </div>
+                                                                    </TableCell>
+                                                                    <TableCell>
+                                                                        {course.courseDescription}
+                                                                    </TableCell>
+                                                                    <TableCell>{course.coursePrice}</TableCell>
+                                                                    <TableCell>{course.teacher?.userName}</TableCell>
+                                                                    <TableCell><a href={course.courseLink}>Course Link</a></TableCell>
+                                                                    <TableCell><a href={course.coursePdf}>Pdf Url</a></TableCell>
+                                                                    <TableCell>
+                                                                        <div className="action-icon">
+                                                                            <Link to={`/createAdminLectures/`} state={course._id} title="Edit Course">
+                                                                                Add Lectures
+                                                                            </Link>
+                                                                        </div>
+                                                                    </TableCell>
+                                                                    <TableCell>
+                                                                        <div className="action-icon" style={{ display: 'flex' }}>
+                                                                            <IconButton onClick={() => confirmDeleteoneCourse(course._id)}>
+                                                                                <DeleteIcon style={{ color: 'red' }} />
+                                                                            </IconButton>
+                                                                            <IconButton onClick={() => editCourseHandler(course)}>
+                                                                                <EditIcon color="primary" />
+                                                                            </IconButton>
+                                                                        </div>
+                                                                    </TableCell>
+
+                                                                    <TableCell>
+                                                                        <div className="action-icon">
+                                                                            <Button onClick={() => toggleExpandCourse(course._id)}>
+                                                                                {expandedCourses[course._id] ? 'Hide Details' : 'Show Details & Lectures'}
+                                                                            </Button>
+                                                                        </div>
+                                                                    </TableCell>
+                                                                </TableRow>
+                                                                {expandedCourses[course._id] && (
+                                                                    <TableRow>
+                                                                        <TableCell colSpan={8}>
+                                                                            <div>
+                                                                                {/* Lectures Table */}
+                                                                                <Typography variant="h6" gutterBottom>Lectures</Typography>
+                                                                                <TableContainer component={Paper} style={{ marginBottom: '20px' }}>
+                                                                                    {course.lectures.map((lecture, index) => (
+                                                                                        <Accordion key={index}>
+                                                                                            <AccordionSummary
+                                                                                                expandIcon={<ExpandMoreIcon />}
+                                                                                                aria-controls={`panel${index}-content`}
+                                                                                                id={`panel${index}-header`}
+                                                                                            >
+                                                                                                <Typography>{lecture.title}</Typography>
+                                                                                            </AccordionSummary>
+                                                                                            <AccordionDetails>
+                                                                                                <Table>
+                                                                                                    <TableHead>
+                                                                                                        <TableRow>
+                                                                                                            <TableCell>Description</TableCell>
+                                                                                                            <TableCell>Video URL</TableCell>
+                                                                                                            <TableCell>Pdf URL</TableCell>
+                                                                                                            <TableCell>Edit</TableCell>
+                                                                                                            <TableCell>Delete</TableCell>
+                                                                                                        </TableRow>
+                                                                                                    </TableHead>
+                                                                                                    <TableBody>
+                                                                                                        <TableRow>
+                                                                                                            <TableCell>{lecture.description}</TableCell>
+                                                                                                            <TableCell><a href={lecture.videoUrl} target="_blank" rel="noopener noreferrer">{lecture.videoUrl}</a></TableCell>
+                                                                                                            <TableCell><a href={lecture.pdfUrl}>Pdf Url</a></TableCell>
+                                                                                                            <TableCell>
+                                                                                                                <IconButton onClick={() => editLectureHandler(lecture)}>
+                                                                                                                    <EditIcon color="primary" />
+                                                                                                                </IconButton>
+                                                                                                            </TableCell>
+                                                                                                            <TableCell>
+                                                                                                                <IconButton onClick={() => confirmDeleteLecture(lecture._id)}>
+                                                                                                                    <DeleteIcon style={{ color: 'red' }} />
+                                                                                                                </IconButton>
+                                                                                                            </TableCell>
+                                                                                                        </TableRow>
+                                                                                                    </TableBody>
+                                                                                                </Table>
+                                                                                            </AccordionDetails>
+                                                                                        </Accordion>
+                                                                                    ))}
+                                                                                </TableContainer>
+
+                                                                                {/* Course Details */}
+                                                                                <Typography variant="h6" gutterBottom>Course Details</Typography>
+                                                                                <TableContainer component={Paper} style={{ marginBottom: '20px' }}>
+                                                                                    <Table>
+                                                                                        <TableHead>
+                                                                                            <TableRow>
+                                                                                                <TableCell>Title</TableCell>
+                                                                                                <TableCell>Description</TableCell>
+                                                                                                <TableCell>Features</TableCell>
+                                                                                                <TableCell>Overview</TableCell>
+                                                                                                <TableCell>Actions</TableCell>
+                                                                                                <TableCell>Cards</TableCell>
+                                                                                            </TableRow>
+                                                                                        </TableHead>
+                                                                                        <TableBody>
+                                                                                            <TableRow>
+                                                                                                <TableCell>{course.details?.title || 'N/A'}</TableCell>
+                                                                                                <TableCell>{course.details?.text || 'N/A'}</TableCell>
+                                                                                                <TableCell>
+                                                                                                    {course.details?.features
+                                                                                                        ? course.details.features.split(' ').slice(0, 30).join(' ') + (course.details.features.split(' ').length > 30 ? '...' : '')
+                                                                                                        : 'N/A'}
+                                                                                                </TableCell>
+                                                                                                <TableCell>
+                                                                                                    {course.details?.overview
+                                                                                                        ? course.details.overview.split(' ').slice(0, 30).join(' ') + (course.details.overview.split(' ').length > 30 ? '...' : '')
+                                                                                                        : 'N/A'}
+                                                                                                </TableCell>
+
+                                                                                                <TableCell>
+                                                                                                    <Button onClick={() => handleEditDetails(course._id)}>Edit/Add Details</Button>
+                                                                                                </TableCell>
+                                                                                                <TableCell>{course.details?.cards?.length > 0 ? 'See below' : 'No Cards'}</TableCell>
+                                                                                            </TableRow>
+                                                                                        </TableBody>
+                                                                                    </Table>
+                                                                                </TableContainer>
+
+                                                                                {Array.isArray(course.details?.cards) && course.details.cards.length > 0 && (
+                                                                                    <>
+                                                                                        <Typography variant="h6" gutterBottom>Card Details</Typography>
+                                                                                        <TableContainer component={Paper}>
+                                                                                            <Table>
+                                                                                                <TableHead>
+                                                                                                    <TableRow>
+                                                                                                        <TableCell>Card Icon</TableCell>
+                                                                                                        <TableCell>Card Heading</TableCell>
+                                                                                                        <TableCell>Card Description</TableCell>
+                                                                                                    </TableRow>
+                                                                                                </TableHead>
+                                                                                                <TableBody>
+                                                                                                    {course.details.cards.map((card, index) => (
+                                                                                                        <TableRow key={index}>
+                                                                                                            <TableCell>
+                                                                                                                <i className={card.icon} style={{ width: '30px', height: '30px' }}></i>
+                                                                                                            </TableCell>
+                                                                                                            <TableCell>{card.heading}</TableCell>
+                                                                                                            <TableCell>{card.description}</TableCell>
+                                                                                                        </TableRow>
+                                                                                                    ))}
+                                                                                                </TableBody>
+                                                                                            </Table>
+                                                                                        </TableContainer>
+                                                                                    </>
+                                                                                )}
+                                                                            </div>
+                                                                        </TableCell>
+                                                                    </TableRow>
+                                                                )}
+                                                            </React.Fragment>
+                                                        ))}
+                                                    </TableBody>
+                                                </Table>
+                                            </TableContainer>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
                         </div>
-                    </div>
-                ))}
-                          </div>
                     </div>
                 </div>
-        
-                  
             </div>
-            </div>
-            </div>
-            </div>
-            </div>
-            </div>
-            </div>
-            </div>
-            </div>
-
-            </div>
-
-            {/* Delete Course Confirmation Dialog */}
+            {currentLecture && (
+                <Dialog open={openEditDialog} onClose={handleEditDialogClose}>
+                    <DialogTitle>Edit Lecture</DialogTitle>
+                    <DialogContent>
+                        <DialogContentText>
+                            Please update the lecture details.
+                        </DialogContentText>
+                        <TextField
+                            autoFocus
+                            margin="dense"
+                            name="title"
+                            label="Title"
+                            type="text"
+                            fullWidth
+                            value={currentLecture.title}
+                            onChange={handleLectureChange}
+                        />
+                        <TextField
+                            margin="dense"
+                            name="description"
+                            label="Description"
+                            type="text"
+                            fullWidth
+                            value={currentLecture.description}
+                            onChange={handleLectureChange}
+                        />
+                        <TextField
+                            margin="dense"
+                            name="videoUrl"
+                            label="Video URL"
+                            type="text"
+                            fullWidth
+                            value={currentLecture.videoUrl}
+                            onChange={handleLectureChange}
+                        />
+                        <input
+                            type="file"
+                            className="form-control"
+                            name="lecturePdf"
+                            onChange={handleLecturePdfChange}
+                        />
+                    </DialogContent>
+                    <DialogActions>
+                        <Button onClick={handleEditDialogClose} color="primary">
+                            Cancel
+                        </Button>
+                        <Button onClick={handleLectureSave} color="primary">
+                            Save
+                        </Button>
+                    </DialogActions>
+                </Dialog>
+            )}
+            {currentCourse && (
+                <Dialog open={openEditCourseDialog} onClose={handleEditCourseDialogClose}>
+                    <DialogTitle>Edit Course</DialogTitle>
+                    <DialogContent>
+                        <DialogContentText>
+                            Please update the course details.
+                        </DialogContentText>
+                        <TextField
+                            autoFocus
+                            margin="dense"
+                            name="courseName"
+                            label="Course Name"
+                            type="text"
+                            fullWidth
+                            value={currentCourse.courseName}
+                            onChange={handleCourseChange}
+                        />
+                        <TextField
+                            margin="dense"
+                            name="courseDescription"
+                            label="Course Description"
+                            type="text"
+                            fullWidth
+                            value={currentCourse.courseDescription}
+                            onChange={handleCourseChange}
+                        />
+                        <TextField
+                            margin="dense"
+                            name="coursePrice"
+                            label="Course Price"
+                            type="number"
+                            fullWidth
+                            value={currentCourse.coursePrice}
+                            onChange={handleCourseChange}
+                        />
+                        <TextField
+                            margin="dense"
+                            name="courseLink"
+                            label="Course Link"
+                            type="text"
+                            fullWidth
+                            value={currentCourse.courseLink}
+                            onChange={handleCourseChange}
+                        />
+                        <input
+                            type="file"
+                            className="form-control"
+                            name="courseThumbnail"
+                            onChange={handleThumbnailChange}
+                        />
+                        <input
+                            type="file"
+                            className="form-control"
+                            name="coursePdf"
+                            multiple
+                            onChange={handlePdfChange}
+                        />
+                    </DialogContent>
+                    <DialogActions>
+                        <Button onClick={handleEditCourseDialogClose} color="primary">
+                            Cancel
+                        </Button>
+                        <Button onClick={handleCourseSave} color="primary">
+                            Save
+                        </Button>
+                    </DialogActions>
+                </Dialog>
+            )}
             <Dialog open={openDeleteCourseDialog} onClose={handleCloseDeleteCourseDialog}>
-                <DialogTitle>Delete Course</DialogTitle>
+                <DialogTitle>Confirm Delete</DialogTitle>
                 <DialogContent>
-                    <DialogContentText>Are you sure you want to delete this course?</DialogContentText>
+                    <DialogContentText>
+                        Are you sure you want to delete this course?
+                    </DialogContentText>
                 </DialogContent>
                 <DialogActions>
-                    <Button onClick={handleCloseDeleteCourseDialog} color="primary">Cancel</Button>
-                    <Button onClick={handleconfirmDeleteoneCourse} color="primary">Delete</Button>
+                    <Button onClick={handleCloseDeleteCourseDialog} color="primary">
+                        Cancel
+                    </Button>
+                    <Button onClick={handleconfirmDeleteoneCourse} color="secondary">
+                        Delete
+                    </Button>
                 </DialogActions>
             </Dialog>
 
-            {/* Delete Lecture Confirmation Dialog */}
             <Dialog open={openDeleteLectureDialog} onClose={handleCloseDeleteLectureDialog}>
-                <DialogTitle>Delete Lecture</DialogTitle>
+                <DialogTitle>Confirm Delete</DialogTitle>
                 <DialogContent>
-                    <DialogContentText>Are you sure you want to delete this lecture?</DialogContentText>
+                    <DialogContentText>
+                        Are you sure you want to delete this lecture?
+                    </DialogContentText>
                 </DialogContent>
                 <DialogActions>
-                    <Button onClick={handleCloseDeleteLectureDialog} color="primary">Cancel</Button>
-                    <Button onClick={handleConfirmDeleteLecture} color="primary">Delete</Button>
+                    <Button onClick={handleCloseDeleteLectureDialog} color="primary">
+                        Cancel
+                    </Button>
+                    <Button onClick={handleConfirmDeleteLecture} color="secondary">
+                        Delete
+                    </Button>
                 </DialogActions>
             </Dialog>
 
-            {/* Edit Lecture Dialog */}
-            <Dialog open={openEditDialog} onClose={handleEditDialogClose}>
-                <DialogTitle>Edit Lecture</DialogTitle>
-                <DialogContent>
-                    <TextField margin="dense" label="Title" name="title" fullWidth value={currentLecture?.title || ''} onChange={handleLectureChange} />
-                    <TextField margin="dense" label="Description" name="description" fullWidth value={currentLecture?.description || ''} onChange={handleLectureChange} />
-                    <TextField margin="dense" label="Video URL" name="videoUrl" fullWidth value={currentLecture?.videoUrl || ''} onChange={handleLectureChange} />
-                    <Button variant="contained" component="label">
-                        Upload PDF
-                        <input type="file" hidden onChange={handleLecturePdfChange} />
-                    </Button>
-                </DialogContent>
-                <DialogActions>
-                    <Button onClick={handleEditDialogClose} color="primary">Cancel</Button>
-                    <Button onClick={handleLectureSave} color="primary">Save</Button>
-                </DialogActions>
-            </Dialog>
+            <EditCourseDetailsModal
+                open={openModal}
+                onClose={handleCloseModal}
+                courseId={selectedCourseId}
+                onSave={handleSaveDetails}
+            />
 
-            {/* Edit Course Dialog */}
-            <Dialog open={openEditCourseDialog} onClose={handleEditCourseDialogClose}>
-                <DialogTitle>Edit Course</DialogTitle>
-                <DialogContent>
-                    <TextField margin="dense" label="Course Name" name="courseName" fullWidth value={currentCourse?.courseName || ''} onChange={handleCourseChange} />
-                    <TextField margin="dense" label="Course Description" name="courseDescription" fullWidth value={currentCourse?.courseDescription || ''} onChange={handleCourseChange} />
-                    <TextField margin="dense" label="Course Price" name="coursePrice" fullWidth value={currentCourse?.coursePrice || ''} onChange={handleCourseChange} />
-                    <TextField margin="dense" label="Course Link" name="courseLink" fullWidth value={currentCourse?.courseLink || ''} onChange={handleCourseChange} />
-                    <TextField margin="dense" label="Course PopUp" name="popUpText" fullWidth value={currentCourse?.popUpText || ''} onChange={handleCourseChange} />
-                    <Button variant="contained" component="label">
-                        Upload Course Thumbnail
-                        <input type="file" hidden onChange={handleThumbnailChange} />
-                    </Button>
-                    <Button variant="contained" component="label">
-                        Upload Course PDF
-                        <input type="file" multiple hidden onChange={handlePdfChange} />
-                    </Button>
-                </DialogContent>
-                <DialogActions>
-                    <Button onClick={handleEditCourseDialogClose} color="primary">Cancel</Button>
-                    <Button onClick={handleCourseSave} color="primary">Save</Button>
-                </DialogActions>
-            </Dialog>
-        </>
+        </div>
     );
-};
+}
 
 export default CourseInfo;
-

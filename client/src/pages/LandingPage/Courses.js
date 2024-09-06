@@ -117,20 +117,20 @@ const Products = () => {
       <>
         {filteredProducts.map((product) => (
           <Grid item xs={12} sm={6} md={4} key={product._id}>
-            <Card sx={{ height: '100%', display: 'flex', flexDirection: 'column' }}>
-              <img
-                src={product.courseThumbnail}
-                alt="Course thumbnail"
-                style={{ height: "200px", objectFit: "cover" }}
-              />
-              <Box p={2} flexGrow={1}>
+            <Card sx={{ height: '100%', display: 'flex', flexDirection: 'column' }} className="text-justify">
+            <img
+    src={product.courseThumbnail}
+    alt="Course thumbnail"
+    style={{ width: "100%", height: "270px" }}
+  />
+              <Box p={2} flexGrow={1} className="text-justify">
                 <Typography variant="h5">{product.courseName}</Typography>
-                <Typography variant="body2" color="textSecondary">
+                <Typography variant="body2" color="textSecondary" className="mt-2">
                   {product.courseDescription}
                 </Typography>
                 <Box display="flex" justifyContent="space-between" alignItems="center" mt={2}>
                   <Typography variant="body2" color="textSecondary">
-                    Creator - Mr. Santosh Singh
+                    Creator - {product.teacher?.userName}
                   </Typography>
                   <Typography variant="body2" color="textSecondary">
                     <b>Price: </b>{product.coursePrice} ₹
@@ -138,9 +138,9 @@ const Products = () => {
                 </Box>
               </Box>
               <Box p={2} display="flex" justifyContent="space-between">
-                <Button variant="contained" color="primary" onClick={() => showModal(product)}>
-                  More Details
-                </Button>
+              <Link to={`/courseDetails/${product._id}`} className="btn-get-started animated fadeInUp scrollto">
+                    Read More 
+                  </Link>
                 {userData ? (
                   <Button variant="contained" color="secondary" onClick={() => addProduct(product)}>
                     Add to Cart
@@ -168,19 +168,16 @@ const Products = () => {
         <Typography variant="h3" align="center" gutterBottom>
           All Courses
         </Typography>
-        <Box display="flex" alignItems="center" mb={2}>
+        <Box display="flex" alignItems="center" mb={2} m={2}>
           <BsSearch color="gray.300" />
           <input
             type="text"
-            className="form-control"
+            className="form-control mx-2"
             value={searchQuery}
             onChange={handleSearchChange}
             placeholder="Search a course ..."
           />
         </Box>
-        <Typography variant="h5" mt={2}>
-          Select Category
-        </Typography>
         <Box display="flex" flexWrap="wrap" justifyContent="center" mt={2}>
           {categories.map((item, index) => (
             <Button

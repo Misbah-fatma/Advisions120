@@ -2,14 +2,17 @@ const CourseModel = require("../model/CourseModel");
 const cloudinary=require('../middlewares/cloudinary');
 const { requireLogin } = require("../middlewares/requireLogin");
 const LectureModel = require("../model/Lectures");
+const DetailsCourses = require("../model/DetailsCoursesModel");
+
+
 
 module.exports.postCourse__controller = async (req, res, next) => {
   try {
     console.log(req.body); // Log the request body to see what data is being sent
 
-    const { courseDescription, courseName, courseLink, coursePrice, lectures } = req.body;
+    const { courseDescription, courseName, courseLink, coursePrice, lectures, details } = req.body; // Add 'details' to destructuring
 
-    if (!courseDescription || !courseName || !courseLink || !coursePrice || !lectures) {
+    if (!courseDescription || !courseName || !courseLink || !coursePrice || !lectures || !details) {
       return res.status(400).json({
         error: "Please Provide All Information",
       });
@@ -78,6 +81,19 @@ module.exports.postCourse__controller = async (req, res, next) => {
       }));
     }
 
+    // Parse details JSON and create details
+    const parsedDetails = JSON.parse(details); // Assuming 'details' comes as a JSON string in req.body
+
+    const newDetails = new DetailsCourses({
+      title: parsedDetails.title,
+      text: parsedDetails.text,
+      cards: parsedDetails.cards,
+      features: parsedDetails.features,
+      overview: parsedDetails.overview,
+    });
+
+    await newDetails.save();
+
     // Save course details
     const course = new CourseModel({
       courseDescription,
@@ -87,7 +103,8 @@ module.exports.postCourse__controller = async (req, res, next) => {
       coursePrice,
       coursePdf,
       teacher: req.user._id,
-      lectures: savedLectures // Associate course with lectures
+      lectures: savedLectures, // Associate course with lectures
+      details: newDetails._id,  // Associate course with the new details
     });
 
     await course.save();
@@ -98,7 +115,8 @@ module.exports.postCourse__controller = async (req, res, next) => {
     return res.status(200).json({
       message: "Course and Lectures added successfully",
       course: course,
-      lectures: savedLectures
+      lectures: savedLectures,
+      details: newDetails,
     });
   } catch (err) {
     console.log(err);
@@ -113,7 +131,10 @@ module.exports.postCourse__controller = async (req, res, next) => {
 
 module.exports.getCourses__controller = async (req, res, next) => {
   try {
-    const courses = await CourseModel.find().populate('lectures');
+    const courses = await CourseModel.find()
+    .populate('lectures')
+    .populate('details')
+    .populate('teacher', 'userName');
     return res.status(200).json({
       courses,
     });
@@ -184,7 +205,7 @@ module.exports.getAllData = async (req, res) => {
 
 module.exports.getItems__controller = async (req, res, next) => {
   try {
-    const allData = await CourseModel.find();
+    const allData = await CourseModel.find().populate('teacher', 'userName');;
     if (!allData || allData.length === 0) {
         return res.status(400).json({
             success: false,
@@ -424,6 +445,33 @@ exports.deleteLecture = async (req, res) => {
 };
 
 
+module.exports.getCoursesWithDetails = async (req, res) => {
+  try {
+    // Fetch all courses with populated details and lectures
+    const courses = await CourseModel.find()
+      .populate({
+        path: 'details',
+        model: 'DetailsCourses'
+      })
+      .populate({
+        path: 'lectures',
+        model: 'Lecture'
+      })
+      .populate({
+        path: 'teacher',
+        model: 'User'
+      });
 
+    return res.status(200).json({
+      message: 'Courses fetched successfully',
+      courses
+    });
+  } catch (err) {
+    console.error(err);
+    return res.status(500).json({
+      error: 'Server error'
+    });
+  }
+};
 
 

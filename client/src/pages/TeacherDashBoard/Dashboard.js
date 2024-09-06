@@ -37,6 +37,7 @@ const Dashboard3 = ({ course }) => {
   const username = userData?.userName;
   const activity = userData?.createdAt;
   const email = userData?.email;
+  const role = userData?.role;
 
   useEffect(() => {
     dispatch(fetchAllCourseInfo());
@@ -216,25 +217,8 @@ const Dashboard3 = ({ course }) => {
     }
   }, [teachers, totalCourses, courseData, enrollments, students]);
 
-  const [title, setTitle] = useState('');
-  const [dateTime, setDateTime] = useState('');
-  const [teacherLink, setTeacherLink] = useState('');
+ 
 
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-
-    try {
-      const response = await axiosInstance.post('/api/live-classes', {
-        title,
-        dateTime,
-        teacherId : userId,
-      });
-      setTeacherLink(response.data.teacherLink);
-      console.log(response.data);
-    } catch (error) {
-      console.error(error);
-    }
-  };
 
   return (
     <div>
@@ -391,37 +375,7 @@ const Dashboard3 = ({ course }) => {
                   </div>
                 </div>
               </div>
-              {/* <div className="row" id="deleteTableItem">
-                <div className="col-md-4 col-lg-4">
-                  <div className="card mb-5">
-                    <div className="card-body">
-              <form onSubmit={handleSubmit}>
-        <TextField
-          label="Class Title"
-          value={title}
-          onChange={(e) => setTitle(e.target.value)}
-          required
-        />
-        <TextField
-          type="datetime-local"
-          value={dateTime}
-          onChange={(e) => setDateTime(e.target.value)}
-          required
-        />
-        <Button type="submit">Schedule Class</Button>
-      </form>
-      {teacherLink && (
-        <div>
-          <h3>Your Jitsi Meeting Link</h3>
-          <a href={teacherLink} target="_blank" rel="noopener noreferrer">
-            Start Class
-          </a>
-        </div>
-      )}
-    </div>
-    </div>
-    </div>
-    </div> */}
+             
     </div>
             </div>
           </div>

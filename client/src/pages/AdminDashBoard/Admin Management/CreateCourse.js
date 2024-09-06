@@ -22,18 +22,25 @@ const CreateCourse = () => {
 
   const [userData, setUserData] = useState(null);
 
+  // State for details schema
+  const [details, setDetails] = useState({
+    title: "",
+    text: "",
+    features: "",
+    overview: "",
+    cards: [{ icon: "", heading: "", description: "" }] // Initial card
+  });
+
   useEffect(() => {
-      const userDataFromStorage = localStorage.getItem('user');
-      console.log('Retrieved from storage:', userDataFromStorage); // This will show exactly what is being retrieved
-  
-      if (userDataFromStorage) {
-          try {
-              const parsedData = JSON.parse(userDataFromStorage);
-              setUserData(parsedData);
-          } catch (error) {
-              console.error('Failed to parse user data:', error); // This will log parsing errors, if any
-          }
+    const userDataFromStorage = localStorage.getItem('user');
+    if (userDataFromStorage) {
+      try {
+        const parsedData = JSON.parse(userDataFromStorage);
+        setUserData(parsedData);
+      } catch (error) {
+        console.error('Failed to parse user data:', error);
       }
+    }
   }, []);
 
   const teacherName = userData?.userName;
@@ -43,9 +50,36 @@ const CreateCourse = () => {
       title: "",
       description: "",
       videoUrl: "",
-      pdfUrl : null, 
+      pdfUrl: null, 
     }
   ]);
+
+  const handleDetailsChange = (e) => {
+    setDetails({
+      ...details,
+      [e.target.name]: e.target.value,
+    });
+  };
+
+  const handleCardChange = (index, e) => {
+    const updatedCards = [...details.cards];
+    updatedCards[index][e.target.name] = e.target.value;
+    setDetails({ ...details, cards: updatedCards });
+  };
+
+  const handleAddCard = () => {
+    setDetails({
+      ...details,
+      cards: [...details.cards, { icon: "", heading: "", description: "" }]
+    });
+  };
+
+  const handleRemoveCard = (index) => {
+    const updatedCards = [...details.cards];
+    updatedCards.splice(index, 1);
+    setDetails({ ...details, cards: updatedCards });
+  };
+
   const [showLectureButton, setShowLectureButton] = useState(true);
 
   const handleClose = () => setShow(false);
@@ -75,6 +109,9 @@ const CreateCourse = () => {
 
     formData.append("lectures", JSON.stringify(updatedLectures));
 
+    // Append details schema data
+    formData.append("details", JSON.stringify(details));
+
     axiosInstance
       .post("/post-course", formData, {
         headers: {
@@ -90,6 +127,7 @@ const CreateCourse = () => {
           duration: 5000,
           isClosable: true,
         });
+        // Reset form
         setCourseDescription("");
         setCourseName("");
         setCourseThumbnail("");
@@ -105,6 +143,13 @@ const CreateCourse = () => {
             pdfFile: null,
           }
         ]);
+        setDetails({
+          title: "",
+          text: "",
+          features: "",
+          overview: "",
+          cards: [{ icon: "", heading: "", description: "" }]
+        });
         dispatch(fetchAllCourseInfo());
         dispatch({
           type: "GET__COURSES",
@@ -174,7 +219,7 @@ const CreateCourse = () => {
                         <form onSubmit={courseFormHandler} encType="multipart/form-data">
                           <input type="hidden" name="_token" value="zApQm200TRCSwlgCvq8JHVIYRC6flSbhaWtzbvCd" autoComplete="off"/>
                           <div className="row">
-                            <div className="col-4">
+                          <div className="col-4">
                               <div className="mb-3">
                                 <label className="form-label">Course Name</label>
                                 <input
@@ -318,22 +363,105 @@ const CreateCourse = () => {
                                 </div>
                               ))}
                             </div>
+
+                            {/* New fields for details schema */}
                             <div className="col-12">
-                              <button type="submit" className="btn bgBlue btn-dipBlue text-black">Create</button>
+                              <h5 className="mt-3">Course Details</h5>
+                              <div className="mb-3">
+                                <label className="form-label">Details Title</label>
+                                <input
+                                  type="text"
+                                  className="form-control"
+                                  value={details.title}
+                                  name="title"
+                                  onChange={handleDetailsChange}
+                                />
+                              </div>
+                              <div className="mb-3">
+                                <label className="form-label">Details Text</label>
+                                <textarea
+                                  className="form-control"
+                                  value={details.text}
+                                  name="text"
+                                  onChange={handleDetailsChange}
+                                ></textarea>
+                              </div>
+                              <div className="mb-3">
+                                <label className="form-label">Features</label>
+                                <textarea
+                                  className="form-control"
+                                  value={details.features}
+                                  name="features"
+                                  onChange={handleDetailsChange}
+                                ></textarea>
+                              </div>
+                              <div className="mb-3">
+                                <label className="form-label">Overview</label>
+                                <textarea
+                                  className="form-control"
+                                  value={details.overview}
+                                  name="overview"
+                                  onChange={handleDetailsChange}
+                                ></textarea>
+                              </div>
+                              <h6>Cards</h6>
+                              {details.cards.map((card, index) => (
+                                <div key={index} className="card my-2 p-2">
+                                  <div className="mb-2">
+                                    <label className="form-label">Icon URL</label>
+                                    <input
+                                      type="text"
+                                      className="form-control"
+                                      value={card.icon}
+                                      name="icon"
+                                      onChange={(e) => handleCardChange(index, e)}
+                                    />
+                                  </div>
+                                  <div className="mb-2">
+                                    <label className="form-label">Heading</label>
+                                    <input
+                                      type="text"
+                                      className="form-control"
+                                      value={card.heading}
+                                      name="heading"
+                                      onChange={(e) => handleCardChange(index, e)}
+                                    />
+                                  </div>
+                                  <div className="mb-2">
+                                    <label className="form-label">Description</label>
+                                    <textarea
+                                      className="form-control"
+                                      value={card.description}
+                                      name="description"
+                                      onChange={(e) => handleCardChange(index, e)}
+                                    ></textarea>
+                                  </div>
+                                  <button type="button" className="btn btn-danger" onClick={() => handleRemoveCard(index)}>
+                                    Remove Card
+                                  </button>
+                                </div>
+                              ))}
+                              <button type="button" className="btn btn-primary mt-3" onClick={handleAddCard}>
+                                Add Card
+                              </button>
                             </div>
                           </div>
+                          {/* Submit Button */}
+                          <button type="submit" className="btn btn-primary mt-4">
+                            Create Course
+                          </button>
                         </form>
                       </div>
                     </div>
                   </div>
                 </div>
-              </div>
+            </div>
             </div>
           </div>
         </div>
       </ChakraProvider>
     </div>
   );
-}
+};
 
 export default CreateCourse;

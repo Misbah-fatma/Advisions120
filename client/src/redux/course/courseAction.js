@@ -2,7 +2,7 @@ import { GET__COURSES, UPDATE_COURSE_LECTURES } from "./courseTypes";
 import axios from "axios";
 
 export const getCourses = (courseInfo) => {
-  console.log(courseInfo)
+
   return {
     type: GET__COURSES,
     payload: courseInfo,
@@ -21,6 +21,7 @@ export const fetchAllCourseInfo = () => {
       .then((result) => {
         dispatch(getCourses(result.data.courses));
         console.log(result.data.courses)
+
         
       })
       .catch((err) => {
@@ -40,7 +41,7 @@ export const fetchCourseInfo = (userId) => {
     })
       .then((result) => {
         dispatch(getCourses(result.data.courses));
-        console.log(result.data.courses)
+ 
       })
       .catch((err) => {
         console.log(err);
@@ -79,16 +80,10 @@ export const deleteCourseItem = (courseId) => {
 };
 
 
-export const START_LIVE_CLASS = 'START_LIVE_CLASS';
 
-export const startLiveClassForStudents = (courseId, teacherId) => async (dispatch) => {
-    try {
-        const response = await axios.post('/api/start-live-class', { courseId, teacherId });
-        dispatch({ type: START_LIVE_CLASS, payload: response.data });
-    } catch (error) {
-        console.error('Error starting live class:', error);
-    }
-};
-
-
-
+// export const startLiveClassForStudents = (courseId, liveClassLink) => {
+//   return {
+//       type: START_LIVE_CLASS,
+//       payload: { courseId, liveClassLink }
+//   };
+// };

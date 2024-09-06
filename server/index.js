@@ -43,57 +43,92 @@ app.use('/api/schools', require("./routes/schoolRoute"));
 app.use('/api/api', require("./routes/planRoute"));
 app.use('/api/teacher', require("./routes/teacherRoute"));
 app.use('/api/schoolRegistration', require("./routes/schoolRegistrationRoute"));
+app.use('/api/bigbluebutton', require("./routes/BBRoute"));
 
 app.get("/api/api/getkey", (req, res) =>
   res.status(200).json({ key: process.env.RAZORPAY_API_KEY })
 );
 
-
 const generateToken = (room, role) => {
-  return jwt.sign(
-    {
-      context: {
-        user: {
-          moderator: role === 'moderator',
-          name: role,
-        },
+  const isModerator = role === "Teacher"; 
+  return {
+    context: {
+      user: {
+        moderator: isModerator,
+        name: role,
       },
-      aud: 'jitsi', // Audience
-      iss: 'your-app-id', // Issuer
-      sub: 'meet.jit.si', // Subject
-      room: room, // Room name
     },
-    process.env.JWT_SECRET, // Ensure SECRET_KEY is stored in environment variables
-    { expiresIn: '1h' }
-  );
+    configOverwrite : {
+      startWithAudioMuted: true,
+      startWithVideoMuted: true,
+      prejoinPageEnabled: false,
+      disableModeratorIndicator: !isModerator,
+      enableUserRolesBasedOnToken: isModerator,
+    },
+    interfaceConfigOverwrite: {
+      APP_NAME: 'Advisions',
+      DEFAULT_REMOTE_DISPLAY_NAME: 'ARD',
+      BRAND_WATERMARK_LINK: '',
+      SHOW_JITSI_WATERMARK: false,
+      SHOW_BRAND_WATERMARK: false,
+      SHOW_POWERED_BY: false,
+      DEFAULT_LOGO_URL: 'https://seeklogo.com/images/A/atm-link-logo-5F955E13CB-seeklogo.com.png',
+      DEFAULT_WELCOME_PAGE_LOGO_URL: 'https://seeklogo.com/images/A/atm-link-logo-5F955E13CB-seeklogo.com.png',
+      TOOLBAR_BUTTONS: [
+        'microphone', 'camera', 'chat', 'desktop', 'fullscreen',
+        'fodeviceselection', 'hangup', 'profile', 'raisehand',
+        'settings', 'videoquality', 'tileview', 'download', 'help'
+      ],
+    },
+    aud: 'jitsi',
+    iss: 'your-app-id',
+    sub: 'meet.jit.si',
+    room: room,
+
+  };
 };
 
-// Schedule a live class
-app.post('/api/api/live-classes', async (req, res) => {
-  const { title, dateTime, teacherId } = req.body;
-  const room = `${title.replace(/\s+/g, '-')}-${Date.now()}`;
-  const teacherToken = generateToken(room, 'moderator');
-  const jitsiLink = `https://meet.jit.si/${room}?jwt=${teacherToken}`;
 
+// Schedule a live class
+app.post('/api/live-classes', async (req, res) => {
+  const { title, dateTime, teacherId, role } = req.body;
+
+  // Generate a unique room name
+  const room = `${title.replace(/\s+/g, '-')}-${Date.now()}`;
+
+  // Generate the token for the teacher, passing the room and role
+  const tokenPayload = generateToken(room, role);
+  const teacherToken = encodeURIComponent(JSON.stringify(tokenPayload)); // Encode the token as a URI component
+
+  // Log the generated token for debugging purposes
+  console.log('Generated Token:', tokenPayload);
+
+  // Create the Jitsi meeting link with the encoded token
+  const jitsiLink = `https://meet.jit.si/${room}`;
+
+  // Create a new LiveClass object with the provided details
   const liveClass = new LiveClass({
     title,
     dateTime,
     link: jitsiLink,
+    role,
     teacherId,
   });
 
   try {
+    // Save the live class details to the database
     await liveClass.save();
+
+    // Respond with the created live class and the Jitsi meeting link
     res.status(201).json({ liveClass, teacherLink: jitsiLink });
   } catch (error) {
+    // Handle any errors that occur during saving
     res.status(500).json({ error: error.message });
   }
 });
 
-
-
 // Get live classes for a student
-app.get('/api/api/live-classes/student/:studentId', async (req, res) => {
+app.get('/api/live-classes/student/:studentId', async (req, res) => {
   try {
     const liveClasses = await LiveClass.find({}).exec();
     res.json(liveClasses);
@@ -101,6 +136,38 @@ app.get('/api/api/live-classes/student/:studentId', async (req, res) => {
     res.status(500).json({ error: error.message });
   }
 });
+
+app.get('/api/live-classes/teacher/:teacherId', async (req, res) => {
+  const { teacherId } = req.params;
+  try {
+      const classes = await LiveClass.find({ teacherId });
+      res.json(classes);
+  } catch (error) {
+      res.status(500).json({ error: 'Failed to fetch classes' });
+  }
+});
+
+app.delete('/api/live-classes/:id', async (req, res) => {
+  const { id } = req.params;
+  try {
+      await LiveClass.findByIdAndDelete(id);
+      res.json({ success: true });
+  } catch (error) {
+      res.status(500).json({ error: 'Failed to delete class' });
+  }
+});
+
+app.put('/api/live-classes/:id', async (req, res) => {
+  const { id } = req.params;
+  const { title, dateTime } = req.body;
+  try {
+      const updatedClass = await LiveClass.findByIdAndUpdate(id, { title, dateTime }, { new: true });
+      res.json(updatedClass);
+  } catch (error) {
+      res.status(500).json({ error: 'Failed to update class' });
+  }
+});
+
 
 
 app.post('/api/run', async (req, res) => {
@@ -130,34 +197,49 @@ if (process.env.NODE_ENV === 'production') {
   });
 }
 
+
+
 const { OAuth2Client } = require('google-auth-library');
-const { requireLogin } = require("./middlewares/requireLogin");
 const client = new OAuth2Client(process.env.GOOGLE_CLIENT_ID);
 
 app.post('/api/auth/google-login', async (req, res) => {
-  const { token } = req.body;
-
   try {
+    const { token } = req.body;
+
+    // Verify Google ID token
     const ticket = await client.verifyIdToken({
       idToken: token,
       audience: process.env.GOOGLE_CLIENT_ID,
     });
 
-    const { userName, email } = ticket.getPayload();
+    const { name, email } = ticket.getPayload();
 
     // Find or create user in your database
     let user = await User.findOne({ email });
     if (!user) {
-      user = await User.create({ userName, email });
+      user = new User({ userName: name, email });
+      await user.save();
     }
 
-    const authToken = jwt.sign({ userId: user._id }, SECRET_KEY, { expiresIn: '1h' });
+    // Generate JWT token
+    const authToken = jwt.sign(
+      { 
+        _id: user._id, 
+        name: user.userName, 
+        email: user.email, 
+        role: user.role 
+      },
+      SECRET_KEY,
+      { expiresIn: '2d' }
+    );
 
+    // Send response with user info and token
     res.status(200).json({ userInfo: user, token: authToken });
   } catch (error) {
     res.status(400).json({ error: "Invalid token" });
   }
 });
+
 
 
 

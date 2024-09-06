@@ -15,7 +15,13 @@ exports.saveCode = async (req, res) => {
 };
 
 exports.fetchCodes = async (req, res) => {
+
+
   try {
+    if (!req.user || !req.user._id) {
+      return res.status(401).json({ success: false, error: "User not authenticated" });
+    }
+
     const codes = await CodeModel.find({ user: req.user._id });
     res.status(200).json({ codes });
   } catch (error) {

@@ -1,160 +1,20 @@
+
 <!DOCTYPE html>
-<html lang="en">
-
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>File Uploader</title>
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/chosen/1.8.7/chosen.min.css">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.css">
-    <style>
-        .uploader {
-            position: relative;
-            display: inline-block;
-        }
-
-        .uploader__btn {
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            padding: 10px 20px;
-            background-color: #007bff;
-            color: white;
-            text-decoration: none;
-            border-radius: 5px;
-            cursor: pointer;
-        }
-
-        .uploader__btn svg {
-            margin-right: 10px;
-        }
-
-        .uploader__btn input[type="file"] {
-            position: absolute;
-            top: 0;
-            left: 0;
-            width: 100%;
-            height: 100%;
-            opacity: 0;
-            cursor: pointer;
-        }
-   
-    </style>
-</head>
-
-<body>
-    <div class="input-group">
-         <label>Requested Last Day*</label>
-         <input readonly="readonly" class="form-control date_picker" style="background-color:white"
-            name="Separationnewlatest[requested_last_day]" id="Separationnewlatest_requested_last_day" type="text"
-            value="06-08-2024">
-    </div>
-    <div class="input-group" xpath="1">
-         <label class="display-block">Reason For Resignation *</label>
-         <select readonly="readonly" id="reasons" data-placeholder="Select Reason"
-            class="form-select reason_change chosen_field" style="background-color: white;"
-            name="Separationnewlatest[reason_for_resignation]">
-            <option value="">Select Reason</option>
-            <option value="a6384b3c9d4e2c">Company culture or boss issues</option>
-            <option value="a6384b3c9d4093">For better growth and career opportunities</option>
-            <option value="a6384b3c9d477a">For better pay package</option>
-            <option value="a6384b3c9d524c">Job stagnancy, unclear vision, or job dissatisfaction</option>
-            <option value="a6384b3c9d4ad9">Personal or family commitments</option>
-            <option value="a665c7392723fe">rakesh3599_Better Compensation</option>
-            <option value="others">Other Reason</option>
-        </select>
-        <div class="chosen-container chosen-container-single" style="width: 100% !important;" title=""
-            id="reasons_chosen">
-            <a class="chosen-single chosen-default"><span>Select Reason</span>
-                <div><b></b></div>
-            </a>
-            <div class="chosen-drop">
-                <div class="chosen-search"><input type="text" autocomplete="off"></div>
-                <ul class="chosen-results">
-                    <li class="active-result result-selected" data-option-array-index="0" style="">Select Reason</li>
-                    <li class="active-result" data-option-array-index="1" style="">Company culture or boss issues</li>
-                    <li class="active-result" data-option-array-index="2" style="">For better growth and career
-                        opportunities</li>
-                    <li class="active-result" data-option-array-index="3" style="">For better pay package</li>
-                    <li class="active-result" data-option-array-index="4" style="">Job stagnancy, unclear vision, or job
-                        dissatisfaction</li>
-                    <li class="active-result" data-option-array-index="5" style="">Personal or family commitments</li>
-                    <li class="active-result" data-option-array-index="6" style="">rakesh3599_Better Compensation</li>
-                    <li class="active-result" data-option-array-index="7" style="">Other Reason</li>
-                </ul>
-            </div>
-        </div>
-    </div>
-    <div class="input-group">
-         <label>Any Attachments</label><br>
-         <input id="ytAddAttachmentWorkFlow_name" type="hidden" value="" name="AddAttachmentWorkFlow[name]">
-        <input class="form-control" name="AddAttachmentWorkFlow[name]" id="AddAttachmentWorkFlow_name" type="file">
-    </div>
-
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.6.0/jquery.min.js"></script>  
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/chosen/1.8.7/chosen.jquery.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jqueryui/1.12.1/jquery-ui.min.js"></script>
+<html>
+  <head>
+    <script src='https://8x8.vc/vpaas-magic-cookie-99562299800c4e01ab8dba44c7c3d177/external_api.js' async></script>
+    <style>html, body, #jaas-container { height: 100%; }</style>
     <script type="text/javascript">
-        $(document).ready(function () {
-            $(".date_picker").datepicker({
-                dateFormat: "dd-mm-yy",
-                changeMonth: true,
-                changeYear: true,
-                yearRange: "-100:+100",
-            });
-            $(".custom_field_multiselect").chosen();
-
-            // Initialize the chosen plugin for your select element
-            $("#reasons").chosen();
-
-
+      window.onload = () => {
+        const api = new JitsiMeetExternalAPI("8x8.vc", {
+          roomName: "vpaas-magic-cookie-99562299800c4e01ab8dba44c7c3d177/SampleAppFamiliarMessagesFoldPainfully",
+          parentNode: document.querySelector('#jaas-container'),
+                        // Make sure to include a JWT if you intend to record,
+                        // make outbound calls or use any other premium features!
+                        // jwt: "eyJraWQiOiJ2cGFhcy1tYWdpYy1jb29raWUtOTk1NjIyOTk4MDBjNGUwMWFiOGRiYTQ0YzdjM2QxNzcvM2EzZGIyLVNBTVBMRV9BUFAiLCJ0eXAiOiJKV1QiLCJhbGciOiJSUzI1NiJ9.eyJhdWQiOiJqaXRzaSIsImlzcyI6ImNoYXQiLCJpYXQiOjE3MjM0NTE4NjUsImV4cCI6MTcyMzQ1OTA2NSwibmJmIjoxNzIzNDUxODYwLCJzdWIiOiJ2cGFhcy1tYWdpYy1jb29raWUtOTk1NjIyOTk4MDBjNGUwMWFiOGRiYTQ0YzdjM2QxNzciLCJjb250ZXh0Ijp7ImZlYXR1cmVzIjp7ImxpdmVzdHJlYW1pbmciOmZhbHNlLCJvdXRib3VuZC1jYWxsIjpmYWxzZSwic2lwLW91dGJvdW5kLWNhbGwiOmZhbHNlLCJ0cmFuc2NyaXB0aW9uIjpmYWxzZSwicmVjb3JkaW5nIjpmYWxzZX0sInVzZXIiOnsiaGlkZGVuLWZyb20tcmVjb3JkZXIiOmZhbHNlLCJtb2RlcmF0b3IiOnRydWUsIm5hbWUiOiJUZXN0IFVzZXIiLCJpZCI6Imdvb2dsZS1vYXV0aDJ8MTEyMjY0NTI1OTcyNjc0ODMxODYwIiwiYXZhdGFyIjoiIiwiZW1haWwiOiJ0ZXN0LnVzZXJAY29tcGFueS5jb20ifX0sInJvb20iOiIqIn0.B5Hz4S4DiHDFod4rL6Bry4b5MMRbVpgijZ0rnNh0z5ximxs_za6CVKs1MuqgXUJ2empybaX0dOyxHQLsg_CMFethU0vLD1l_p5bLjHRfJWNK4RIPBpOUadzEOUVgLBEmTODOxM_8l6iFGF-VP0HeDV-D-GPvnMfZKIC_-5yo2kod56AsgtKeYc13RXUB7JlUFaH-Fi46hzxTOEb-ivfuwA1wpCZUk20QeyaiCZkwO2Bd_7YHzZ8NNoo3oA2Yso5fk-UHVSobng8JhVhKrm_QIkbWuELfpcKQFGOMChLfD4BI3A-pnioEzcmNfyLERffgSCcF0hlIfRxbHvDkccz5xQ"
         });
+      }
     </script>
-    <script>
-        $(function () {
-            var allForms = $("form");
-            for (let i = 0; i < allForms.length; i++) {
-                let eachForm = $(allForms[i]);
-                let foundCsrfToken = eachForm.find("input[name=pbqBeYWPUn]");
-                if (!foundCsrfToken.length) {
-                    eachForm.prepend("<input type=\"hidden\" name=\"pbqBeYWPUn\" value=\"eV84eDNQa0pvdWt5Yk1ab1BfQm45S3BUWEQxQnY0TVHvKYWM2GU-8QV33IQCnT1aUIFOO6RNoAh93SVpFeFoTg==\" />");
-                }
-            }
-        });
-
-        $.ajaxPrefilter(function (options, originalOptions, jqXHR) {
-            if (typeof (options) == "string") {
-                originalOptions.url = options;
-                options = originalOptions;
-            }
-
-            if (!options.data) {
-                options.data = "";
-            }
-
-            if (typeof (options.data) == "string" && options.data.indexOf("&pbqBeYWPUn=") < 0) {
-                try {
-                    options.data = JSON.parse(options.data);
-                    if (!options.data.pbqBeYWPUn) {
-                        options.data.pbqBeYWPUn = "eV84eDNQa0pvdWt5Yk1ab1BfQm45S3BUWEQxQnY0TVHvKYWM2GU-8QV33IQCnT1aUIFOO6RNoAh93SVpFeFoTg==";
-                    }
-                    options.data = JSON.stringify(options.data);
-                } catch (err) {
-                    var token_substring = "pbqBeYWPUn=eV84eDNQa0pvdWt5Yk1ab1BfQm45S3BUWEQxQnY0TVHvKYWM2GU-8QV33IQCnT1aUIFOO6RNoAh93SVpFeFoTg==";
-                    if (options.data.indexOf(token_substring) === -1) {
-                        options.data += "&" + token_substring;
-                    }
-                }
-            } else if (typeof options.data === "object" && options.data instanceof FormData) {
-                if (!options.data.has || !options.data.has("pbqBeYWPUn")) {
-                    options.data.append("pbqBeYWPUn", "eV84eDNQa0pvdWt5Yk1ab1BfQm45S3BUWEQxQnY0TVHvKYWM2GU-8QV33IQCnT1aUIFOO6RNoAh93SVpFeFoTg==");
-                }
-            } else if (!options.data.pbqBeYWPUn) {
-                options.data.pbqBeYWPUn = "eV84eDNQa0pvdWt5Yk1ab1BfQm45S3BUWEQxQnY0TVHvKYWM2GU-8QV33IQCnT1aUIFOO6RNoAh93SVpFeFoTg==";
-            }
-
-        });
-    </script>
-</body>
-
+  </head>
+  <body><div id="jaas-container" ></div></body>
 </html>

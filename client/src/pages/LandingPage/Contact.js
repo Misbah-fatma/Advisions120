@@ -1,70 +1,40 @@
-import React, { useState } from 'react'
-
-import { useDispatch } from 'react-redux'
-
+import React, {useState} from "react";
 import Newsletter from './News'
 import Navbar from './Navbar'
 import Footer from './Footer'
+
 export default function Contact() {
-    var dispatch = useDispatch()
+    const [result, setResult] = React.useState("");
     var [show, setshow] = useState(false)
-    var [data, setdata] = useState({
-        name: "",
-        email: "",
-        subject: "",
-        message: ""
-    })
-    function getData(e) {
-        var name = e.target.name
-        var value = e.target.value
-        setdata((old) => {
-            return {
-                ...old,
-                [name]: value
-            }
-        })
-    }
-    function postData(e) {
-        e.preventDefault()
-        var item = {
-            name: data.name,
-            email: data.email,
-            subject: data.subject,
-            message: data.message,
-            status: "Active",
-            time: new Date()
-        }
-    
+  
+    const onSubmit = async (event) => {
+      event.preventDefault();
+      setResult("Sending....");
+      const formData = new FormData(event.target);
+  
+      formData.append("access_key", "ad76d720-b8ed-4a9f-bf88-99fbaa9297f8");
+  
+      const response = await fetch("https://api.web3forms.com/submit", {
+        method: "POST",
+        body: formData
+      });
+  
+      const data = await response.json();
+  
+      if (data.success) {
+        setResult("Form Submitted Successfully");
+        event.target.reset();
         setshow(true)
-        setdata({
-            name: "",
-            email: "",
-            subject: "",
-            message: ""
-        })
-    }
-  return (
-    <>
-    <Navbar/>
-    {/* <!-- Hero Start --> */}
-    <div className="container-fluid pt-5 bg-primary hero-header">
-        <div className="container pt-5">
-            <div className="row g-5 pt-5">
-                <div className="col-lg-6 align-self-center text-center text-lg-start mb-lg-5">
-                    <h1 className="display-4 text-white mb-4 animated slideInRight">Contact Us</h1>
-                    <nav aria-label="breadcrumb">
-                        <ol className="breadcrumb justify-content-center justify-content-lg-start mb-0">
-                            <li className="breadcrumb-item"><a className="text-white" href="*">Home</a></li>
-                            <li className="breadcrumb-item text-white active" aria-current="page">Contact Us</li>
-                        </ol>
-                    </nav>
-                </div>
-                <div className="col-lg-6 align-self-end text-center text-lg-end">
-                    <img className="img-fluid" src="assets/img/hero-img.png" alt="*" style={{maxHeight: "300px"}}/>
-                </div>
-            </div>
-        </div>
-    </div>
+      } else {
+        console.log("Error", data);
+        setResult(data.message);
+      }
+    };
+  
+    return (
+      <div>
+
+      <Navbar/>
     {/* <!-- Hero End --> */}
 
 
@@ -104,29 +74,24 @@ export default function Contact() {
                                 </div> : ""
                             }
                      <div className="wow fadeIn" data-wow-delay="0.3s">
-                        <form onSubmit={postData}>
+                        <form onSubmit={onSubmit}>
                             <div className="row g-3">
                                 <div className="col-md-6">
                                     <div className="form-floating">
-                                        <input type="text" className="form-control" id="name" name='name' value={data.name} onChange={getData} placeholder="Your Name"/>
+                                        <input type="text" className="form-control" id="name" name='name' placeholder="Your Name"/>
                                         <label for="name">Your Name</label>
                                     </div>
                                 </div>
                                 <div className="col-md-6">
                                     <div className="form-floating">
-                                        <input type="email" className="form-control" id="email" name='email' value={data.email} onChange={getData} placeholder="Your Email"/>
+                                        <input type="email" className="form-control" id="email" name='email'  placeholder="Your Email"/>
                                         <label for="email">Your Email</label>
                                     </div>
                                 </div>
+                               
                                 <div className="col-12">
                                     <div className="form-floating">
-                                        <input type="text" className="form-control" id="subject" name='subject' value={data.subject} onChange={getData} placeholder="Subject"/>
-                                        <label for="subject">Subject</label>
-                                    </div>
-                                </div>
-                                <div className="col-12">
-                                    <div className="form-floating">
-                                        <textarea className="form-control" name='message' value={data.message} onChange={getData} placeholder="Leave a message here" id="message" style={{height: "150px"}}></textarea>
+                                        <textarea className="form-control" name='message'  placeholder="Leave a message here" id="message" style={{height: "150px"}}></textarea>
                                         <label for="message">Message</label>
                                     </div>
                                 </div>
@@ -135,6 +100,7 @@ export default function Contact() {
                                 </div>
                             </div>
                         </form>
+                        <span>{result}</span>
                     </div>
                 </div>
             </div>
@@ -166,7 +132,7 @@ export default function Contact() {
     </div> */}
     <Newsletter/>
     <Footer/>
-    {/* <!-- Newsletter End --> */}
-    </>
-  )
-}
+  
+      </div>
+    );
+  }
